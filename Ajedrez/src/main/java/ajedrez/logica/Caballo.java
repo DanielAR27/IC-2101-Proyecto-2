@@ -18,7 +18,7 @@ public class Caballo extends Piece{
                 int moveValue = r == actualPos.getRow() -2 || r == actualPos.getRow() +2? 1:2;
                 for (int i = -1; i <= 1;i+=2){
                     nextPosition = new Position(r, actualPos.getColumn() + moveValue * i);
-                    System.out.println("actual position: " + nextPosition);
+                    //System.out.println("actual position: " + nextPosition);
                     if (t.validPosition(nextPosition)){ // Posición válida.
                         if (t.getPiece(nextPosition) == null) // Espacio vacío.
                             posiciones.add(nextPosition);
@@ -38,7 +38,7 @@ public class Caballo extends Piece{
 
     @Override
     public String getPath(){
-        if (equipo.name().equals("BLANCO"))
+        if (equipo.toString().equals("B"))
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\caballo_blanco.png";
         else
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\caballo_negro.png";

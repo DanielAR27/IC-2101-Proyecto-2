@@ -1,6 +1,5 @@
 package ajedrez.control;
 
-import ajedrez.logica.Peon;
 import ajedrez.logica.Piece;
 import ajedrez.logica.Position;
 import ajedrez.logica.Tablero;
@@ -16,7 +15,7 @@ import java.util.List;
 public class Control {
     private static Control instance = null;
     private Position actualPosition = null;
-    private String turnoActual = "BLANCO";
+    private String turnoActual = "B";
     private Tablero board;
     // Constructor
     private Control(){
@@ -45,16 +44,35 @@ public class Control {
         return pos;
         }
     
+     public List<Position> getCheckPositions(Tablero t, String team){
+        List <Position> rivalPositions = new ArrayList<Position>();
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j ++){
+                System.out.println(i + ", " + j);
+                Piece piece = t.getPiece(new Position(i, j));
+                if (piece != null){
+                    System.out.println(piece);
+                    if (!piece.getEquipo().equals(team)){
+                            rivalPositions.addAll(piece.getMoves(board));
+                    }
+                }          
+            }
+        }
+        
+        return rivalPositions;
+    }
+    
    public int jugadorJuega(String positionBox){
        List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
        Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
-       System.out.println("Next Position: " + nextPos);
-       if (actualPosition != null)
-           System.out.println("Actual Position: "+ actualPosition);
+       //System.out.println("Next Position: " + nextPos);
+       //if (actualPosition != null)
+           //System.out.println("Actual Position: "+ actualPosition);
         if (board.sameTeam(nextPos, turnoActual)){
             actualPosition = nextPos;
             return 0;
         }else if (board.validMove(actualPosition, nextPos)){
+            
              return 1;
         }else{
             return -1;
@@ -68,11 +86,9 @@ public class Control {
    }
    
    public String pathConstructor(int x, int y){
-       System.out.println("x = " + x + ", y = " + y);
        Piece piece = board.getPiece(obtenerPosition(x, y));
        //System.out.println(piece);
        if (piece == null){
-           System.out.println("NULL PA");
            return null;
        }else
            return piece.getPath();
@@ -83,10 +99,10 @@ public class Control {
        Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
        board.movePiece(actualPosition, nextPos);
        actualPosition = null;
-       if (turnoActual.equals("BLANCO"))
-           turnoActual = "NEGRO";
+       if (turnoActual.equals("B"))
+           turnoActual = "N";
        else
-           turnoActual = "BLANCO";
+           turnoActual = "B";
    }
      
     // Método para guardar los datos, recibe como parámetro un control.

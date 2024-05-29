@@ -9,8 +9,8 @@ package ajedrez.logica;
     public String toString() {
          // Método toString de Estado Compra.
         return switch (this) {
-            case BLANCO->"Blanco";
-            default -> "Negro";
+            case BLANCO-> "B";
+            default -> "N";
         };
     }
 }

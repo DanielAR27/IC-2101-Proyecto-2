@@ -12,7 +12,7 @@ public abstract class Piece {
     }
     
     public String getEquipo(){
-        return equipo.name();
+        return equipo.toString();
     }
     
     public Position getPosition(){
@@ -25,14 +25,14 @@ public abstract class Piece {
     
     public boolean validCapture(Tablero t, Position p){
         if (t.validPosition(p)){
-            System.out.println("is valid.");
+            //System.out.println("is valid.");
             if (t.getPiece(p) != null){
-                System.out.println("piece is not null: "+ t.getPiece(p));
+                //System.out.println("piece is not null: "+ t.getPiece(p));
                 if (!t.getPiece(actualPos).getEquipo().equals(t.getPiece(p).getEquipo()))
                  return true;
             }
         }
-        System.out.println("piece is null dawg");
+        //System.out.println("piece is null dawg");
         return false;
     }
     

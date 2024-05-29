@@ -31,8 +31,12 @@ public class Position{
         this.col = col;
     }
     
-    public boolean samePosition(Position pos){
-        return row == pos.row && col == pos.col;
+    @Override
+    public boolean equals(Object pos){
+        if (pos instanceof Position position)
+            return row ==position.getRow() && col == position.getColumn();
+        else
+            return false;
     }
         
     @Override

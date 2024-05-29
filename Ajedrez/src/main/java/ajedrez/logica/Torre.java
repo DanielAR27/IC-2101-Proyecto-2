@@ -87,7 +87,7 @@ public class Torre extends Piece {
     
     @Override
     public String getPath(){
-        if (equipo.name().equals("BLANCO"))
+        if (equipo.toString().equals("B"))
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\torre_blanca.png";
         else
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\torre_negra.png";

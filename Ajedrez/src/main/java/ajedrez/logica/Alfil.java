@@ -14,7 +14,7 @@ public class Alfil extends Piece{
             // Diagonal izquierda
             for (int r = actualPos.getRow() - 1, c = actualPos.getColumn() - 1; r >= 0; r--, c--){
                     nextPosition = new Position(r , c);
-                    System.out.println(nextPosition);
+                    //System.out.println(nextPosition);
                     if (t.validPosition(nextPosition)){
                         if (t.getPiece(nextPosition) == null)
                             posiciones.add(nextPosition);
@@ -29,11 +29,11 @@ public class Alfil extends Piece{
                     }
             }
             
-            System.out.println("-".repeat(20));
+           //System.out.println("-".repeat(20));
             // Diagonal derecha:
             for (int r = actualPos.getRow() - 1, c = actualPos.getColumn() + 1; c < 8; r--, c++){
                     nextPosition = new Position(r , c);
-                    System.out.println(nextPosition);
+                    //System.out.println(nextPosition);
                     if (t.validPosition(nextPosition)){
                         if (t.getPiece(nextPosition) == null)
                             posiciones.add(nextPosition);
@@ -48,11 +48,11 @@ public class Alfil extends Piece{
                     }
             }
             
-            System.out.println("-".repeat(20));
+            //System.out.println("-".repeat(20));
             // Diagonal izquierda inversa.
             for (int r = actualPos.getRow() + 1, c = actualPos.getColumn() - 1; r < 8; r++, c--){
                     nextPosition = new Position(r , c);
-                    System.out.println(nextPosition);
+                    //System.out.println(nextPosition);
                     if (t.validPosition(nextPosition)){
                         if (t.getPiece(nextPosition) == null)
                             posiciones.add(nextPosition);
@@ -67,11 +67,11 @@ public class Alfil extends Piece{
                     }
             }
             
-            System.out.println("-".repeat(20));
+            //System.out.println("-".repeat(20));
              // Diagonal derecha inversa.
             for (int r = actualPos.getRow() + 1, c = actualPos.getColumn() + 1; c < 8; r++, c++){
                     nextPosition = new Position(r , c);
-                    System.out.println(nextPosition);
+                    //System.out.println(nextPosition);
                     if (t.validPosition(nextPosition)){
                         if (t.getPiece(nextPosition) == null)
                             posiciones.add(nextPosition);
@@ -109,13 +109,12 @@ public class Alfil extends Piece{
             }
         } */       
             
-        
         return posiciones;
     }
     
     @Override
     public String getPath(){
-        if (equipo.name().equals("BLANCO"))
+        if (equipo.toString().equals("B"))
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\alfil_blanco.png";
         else
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\alfil_negro.png";

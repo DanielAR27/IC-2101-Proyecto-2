@@ -14,8 +14,8 @@ public class Peon extends Piece{
         Position nextPosition;
         
         List<Position> posiciones = new ArrayList<>();
-        int doubleMove= equipo.name().equals("BLANCO")? -2:2;
-        int startRow = equipo.name().equals("BLANCO")? 6:1;
+        int doubleMove= equipo.toString().equals("B")?-2:2;
+        int startRow = equipo.toString().equals("B")? 6:1;
         
         nextPosition = new Position(actualPos.getRow() + doubleMove, actualPos.getColumn());
         if (t.validPosition(nextPosition)){
@@ -24,8 +24,8 @@ public class Peon extends Piece{
                 posiciones.add(nextPosition);
         }
         
-        int generalMove = equipo.name().equals("BLANCO")? -1:1;
-        int deniedRow = equipo.name().equals("BLANCO")? 0:7;
+        int generalMove = equipo.toString().equals("B")? -1:1;
+        int deniedRow = equipo.toString().equals("B")? 0:7;
         
         // Diagonal izquierda.
         nextPosition = new Position(actualPos.getRow() +generalMove, actualPos.getColumn() - 1);
@@ -125,7 +125,7 @@ public class Peon extends Piece{
     
     @Override
     public String getPath(){
-        if (equipo.name().equals("BLANCO"))
+        if (equipo.toString().equals("B"))
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\peon_blanco.png";
         else
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\peon_negro.png";
