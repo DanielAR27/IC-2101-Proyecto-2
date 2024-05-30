@@ -1,7 +1,7 @@
 package ajedrez.logica;
 
 public class PieceFactory {
-    public Piece createPiece(String type, String team, Position pos){
+    public static Piece createPiece(String type, String team, Position pos){
         if (team.equals("N")){
             return switch (type) {
                 case "P" -> new Peon(Team.NEGRO, pos);

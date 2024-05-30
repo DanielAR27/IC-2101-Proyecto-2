@@ -1,6 +1,5 @@
 
 package ajedrez.control;
-import ajedrez.logica.Position;
 import java.util.ArrayList;
 import java.util.List;
 

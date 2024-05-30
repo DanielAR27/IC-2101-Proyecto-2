@@ -1,25 +1,22 @@
 package ajedrez.logica;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class Tablero {
+public class Tablero implements Serializable{
     private List <ArrayList<Piece>> tablero;
     
     private List <Position> whitePositions;
     private List <Position> blackPositions;
-    private PieceFactory pieceFactory;
 
     public Tablero(){
-        pieceFactory = new PieceFactory();
         whitePositions = new ArrayList<>();
         blackPositions = new ArrayList<>();
-        tablero = createTablero();
-        //printTablero();
+        tablero = setTablero();
     }
-   
-    private List<ArrayList<Piece>> createTablero(){
+       
+    private List<ArrayList<Piece>> setTablero(){
         // Se inicializa el tablero.
         List<ArrayList<Piece>> board = new  ArrayList<>();
         
@@ -35,43 +32,43 @@ public class Tablero {
                 if (i < 2){
                     // Agregar torre del equipo negro.
                     if (i == 0 && (j == 0 || j == 7))
-                        board.get(i).add(pieceFactory.createPiece("T", "N", piecePos));
+                        board.get(i).add(PieceFactory.createPiece("T", "N", piecePos));
                     // Agregar caballo del equipo negro.
                     else if (i == 0 && (j == 1 || j == 6))
-                       board.get(i).add(pieceFactory.createPiece("C", "N", piecePos));
+                       board.get(i).add(PieceFactory.createPiece("C", "N", piecePos));
                     // Agregar alfil del equipo negro.
                     else if (i == 0 && (j == 2 || j == 5))
-                        board.get(i).add(pieceFactory.createPiece("A", "N", piecePos));
+                        board.get(i).add(PieceFactory.createPiece("A", "N", piecePos));
                     // Agregar rey del equipo negro.
                     else if (i == 0 && j == 3)
-                        board.get(i).add(pieceFactory.createPiece("K", "N", piecePos));
+                        board.get(i).add(PieceFactory.createPiece("K", "N", piecePos));
                     // Agregar reina del equipo negro.
                     else if(i == 0 && j == 4)
-                        board.get(i).add(pieceFactory.createPiece("Q", "N", piecePos));
+                        board.get(i).add(PieceFactory.createPiece("Q", "N", piecePos));
                     // Agregar peon del equipo negro.
                     else
-                        board.get(i).add(pieceFactory.createPiece("P", "N", piecePos));
+                        board.get(i).add(PieceFactory.createPiece("P", "N", piecePos));
                  // Se agrega la posición a las posiciones de piezas negras.
                  blackPositions.add(piecePos);
                 // Agregar piezas blancas.
                 }else if(i > 5){
                     // Agregar peon del equipo blanco.
                     if (i == 6)
-                         board.get(i).add(pieceFactory.createPiece("P", "B", piecePos));
+                         board.get(i).add(PieceFactory.createPiece("P", "B", piecePos));
                     // Agregar torre del equipo blanco.
                     else if (i == 7 && (j == 0 || j == 7))
-                        board.get(i).add(pieceFactory.createPiece("T", "B", piecePos));
+                        board.get(i).add(PieceFactory.createPiece("T", "B", piecePos));
                     // Agregar caballo del equipo blanco.
                     else if (i == 7 && (j == 1 || j == 6))
-                        board.get(i).add(pieceFactory.createPiece("C", "B", piecePos));
+                        board.get(i).add(PieceFactory.createPiece("C", "B", piecePos));
                     // Agregar aflfil del equpo blanco.
                     else if (i == 7 && (j == 2 || j == 5))
-                        board.get(i).add(pieceFactory.createPiece("A", "B", piecePos));
+                        board.get(i).add(PieceFactory.createPiece("A", "B", piecePos));
                     // Agregar rey del equipo blanco.
                     else if (i == 7 && j == 3)
-                        board.get(i).add(pieceFactory.createPiece("K", "B", piecePos));
+                        board.get(i).add(PieceFactory.createPiece("K", "B", piecePos));
                     else
-                        board.get(i).add(pieceFactory.createPiece("Q", "B", piecePos));
+                        board.get(i).add(PieceFactory.createPiece("Q", "B", piecePos));
                  // Se agrega la posición a las posiciones de piezas blancas.
                  whitePositions.add(piecePos);
                 // Agregar espacios vacios.    
@@ -82,33 +79,12 @@ public class Tablero {
         }
         return board;
     }
-
-    public void removeTeamPosition(String equipo, Position pos){
-        // Se pregunta cual lista tomar en base al equipo de la pieza del rey.
-        if (equipo == "B"){
-            for (int i = 0; i < whitePositions.size(); i++){
-                Position whitePos = whitePositions.get(i);
-                if (whitePos.equals(pos)){
-                    whitePositions.remove(whitePos);
-                    break;
-                }
-            }
-       }else{
-            for (int i = 0; i < blackPositions.size(); i++){
-                Position blackPos = blackPositions.get(i);
-                if (blackPos.equals(pos)){
-                    whitePositions.remove(blackPos);
-                    break;
-                }
-            }
-        }
-    }
     
     public Piece getPiece(Position p){
         return tablero.get(p.getRow()).get(p.getColumn());
     }
         
-    public void movePiece(Position actualPos, Position nextPos){
+    public boolean movePiece(Position actualPos, Position nextPos){
         if (!validPosition(actualPos) || !validPosition(nextPos))
             throw new IllegalArgumentException("Position is not valid.");
         // Se obtiene cual sea la pieza.
@@ -140,6 +116,7 @@ public class Tablero {
         tablero.get(nextPos.getRow()).set(nextPos.getColumn(), piece);
         System.out.println("Posiciones blancas: " + whitePositions);
         System.out.println("Posiciones negras: " + blackPositions);
+        return nextPiece instanceof Rey;
     }
             
     public List<Position> getSecurePositions(List<Position> kingPositions, Position actualPosition){
@@ -195,9 +172,6 @@ public class Tablero {
                 return false;}
             else if (piece instanceof Rey){
                 List <Position> positions = (ArrayList) getSecurePositions(piece.getMoves(this), actualPos);
-                System.out.println("Posiciones para el rey: " + positions);
-                System.out.println("ESTADO DEL TABLERO: ");
-                printTablero();
                 for (Position p: positions){
                     if (p.equals(nextPos))
                     return true;
@@ -205,6 +179,7 @@ public class Tablero {
                 return false;
             }else{
                 List <Position> positions = (ArrayList) piece.getMoves(this);
+                System.out.println(positions);
                 for (Position p: positions){
                     if (p.equals(nextPos))
                         return true;
@@ -221,7 +196,6 @@ public class Tablero {
     public boolean sameTeam(Position p, String team){
         Piece piece = getPiece(p);
         if (piece == null){
-            //System.out.println("piece is null same team.");
             return false;
         }
         return piece.equipo.toString().equals(team);

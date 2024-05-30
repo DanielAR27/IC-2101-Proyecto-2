@@ -9,34 +9,36 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Control {
-    private static Control instance = null;
-    private Position actualPosition = null;
-    private String turnoActual = "B";
+public class Control implements Serializable {
+    private Position actualPosition;
+    private String jugadasHistorial;
+    private String turnoActual;
     private Tablero board;
+    private int contador = 1;
+    
     // Constructor
-    private Control(){
+    public Control(){
         board = new Tablero();
-        board.printTablero();
+        actualPosition = null;
+        turnoActual = "B";
+        jugadasHistorial = "";
     }
     
-    // Método que permite obtener una instancia de control, si esta no se puede obtener entonces crea una.
-    public static Control getInstance(){
-        if (instance == null){
-            try{
-                instance = cargarDatos();
-            }catch (Exception e){
-                System.out.println("Error: " + e.toString());
-                System.out.println("Se creará un nuevo control.");
-                instance = new Control();
-            }
-        }
-        return instance;
+    public Tablero getTablero(){
+        return board;
     }
     
+    public void reiniciarJuego(){
+        board = new Tablero();
+        actualPosition = null;
+        turnoActual = "B";
+        jugadasHistorial = "";
+    }
+        
     public Position obtenerPosition(int x, int y){
         Position pos = new Position(x, y);
         if (!board.validPosition(pos))
@@ -44,85 +46,97 @@ public class Control {
         return pos;
         }
     
-     public List<Position> getCheckPositions(Tablero t, String team){
-        List <Position> rivalPositions = new ArrayList<Position>();
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j ++){
-                System.out.println(i + ", " + j);
-                Piece piece = t.getPiece(new Position(i, j));
-                if (piece != null){
-                    System.out.println(piece);
-                    if (!piece.getEquipo().equals(team)){
-                            rivalPositions.addAll(piece.getMoves(board));
-                    }
-                }          
-            }
-        }
-        
-        return rivalPositions;
-    }
-    
    public int jugadorJuega(String positionBox){
        List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
        Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
-       //System.out.println("Next Position: " + nextPos);
-       //if (actualPosition != null)
-           //System.out.println("Actual Position: "+ actualPosition);
+       // Si la pieza es del mismo equipo que el equipo que tiene derecho a hacer la actual jugada
+       // entonces se asigna como posición actual y se retorna un cero.
         if (board.sameTeam(nextPos, turnoActual)){
             actualPosition = nextPos;
             return 0;
+        // En caso de que la jugada sea válida entonces se retorna un uno.
         }else if (board.validMove(actualPosition, nextPos)){
-            
              return 1;
+        // Si no se cumplen ninguno de los dos casos mencionados entonces se retorna un menos uno
+        // indicando que no se puede efectuar la jugada.
         }else{
             return -1;
         }
     }
    
+   // Get Plays Historial: Obtiene el historial de jugadas.
+   public String getHistorialPlays(){
+       return jugadasHistorial;
+   }
+   
+   // Get Actual Position Box: Obtener la casilla del tablero en base a la posición actual.
    public String getActualPositionBox(){
-       String positionBox = DataVerificator.IntToLetter(actualPosition.getColumn());
-       positionBox += 8 - actualPosition.getRow();
+       String positionBox = "";
+       if (actualPosition != null){
+            positionBox += DataVerificator.IntToLetter(actualPosition.getColumn());
+            positionBox += 8 - actualPosition.getRow();
+       }
        return positionBox;
    }
    
+   
+   // Path Constructor: Recibe las coordenadas de una posición y determina cual es su dirección de imagen.
    public String pathConstructor(int x, int y){
        Piece piece = board.getPiece(obtenerPosition(x, y));
-       //System.out.println(piece);
        if (piece == null){
            return null;
        }else
            return piece.getPath();
     }
    
-   public void changePlayer(String positionBox){
+   public boolean changePlayer(String positionBox){
        List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
+       String pieceInfo = board.getPiece(actualPosition).toString();
+       String actualBox = getActualPositionBox();
        Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
-       board.movePiece(actualPosition, nextPos);
+       boolean gameOver = board.movePiece(actualPosition, nextPos);
        actualPosition = null;
-       if (turnoActual.equals("B"))
-           turnoActual = "N";
-       else
-           turnoActual = "B";
+       if (gameOver == false){
+            if (turnoActual.equals("B")){
+                jugadasHistorial += contador + ". " + actualBox + " → " + positionBox + " [" +pieceInfo +"]" + " ".repeat(10);
+                turnoActual = "N";
+            }else{
+                jugadasHistorial +=  actualBox + " → " + positionBox + " [" + pieceInfo +"] \n";
+                turnoActual = "B";
+                contador++;
+            }
+       }
+       return gameOver;
+   }
+   
+   public String getEquipoActual(){
+       return turnoActual.equals("B")? "blanco":"negro";
+   }
+   
+   public void printTablero(){
+       board.printTablero();
    }
      
     // Método para guardar los datos, recibe como parámetro un control.
-    public static void guardarDatos(Control control){
+    public static boolean guardarDatos(Control control, String path){
         try{
-            FileOutputStream file = new FileOutputStream("AjedrezData.bin");
+            FileOutputStream file = new FileOutputStream(path);
             ObjectOutputStream stream = new ObjectOutputStream(file);
             stream.writeObject(control);
             stream.close();
             file.close();
             System.out.println("Se han guardado los datos exitosamente.");
+            return true;
         }catch(Exception e){
                 System.out.println("Error: " + e);
+                return false;
          }
     }
     
     // Método para cargar los datos, retorna un control.
-    private static Control cargarDatos() throws FileNotFoundException, IOException, ClassNotFoundException{;
+    public static Control cargarDatos(String path) throws FileNotFoundException, IOException, ClassNotFoundException{;
         Control control;
-        FileInputStream file = new FileInputStream("AjedrezData.bin");
+        FileInputStream file = new FileInputStream(path);
         ObjectInputStream stream = new ObjectInputStream(file);
         control = (Control) stream.readObject();
         return control;

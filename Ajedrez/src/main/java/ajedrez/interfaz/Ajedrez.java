@@ -2,34 +2,33 @@ package ajedrez.interfaz;
 
 import ajedrez.control.Control;
 import ajedrez.control.DataVerificator;
-import ajedrez.logica.Piece;
-import ajedrez.logica.PieceFactory;
-import ajedrez.logica.Position;
 import ajedrez.logica.Tablero;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
+import javax.swing.text.DefaultCaret;
 
 
 public class Ajedrez extends javax.swing.JFrame {
     private String actualButton;
-    private Control control;
-    Map <String , javax.swing.JButton> botones;
+    private boolean gameReady;
+    protected Control control;
+    private Map <String , javax.swing.JButton> botones;
     
     public Ajedrez() {
-        control = Control.getInstance();
+        control = new Control();
         botones = new TreeMap<>();
         initComponents();
         loadGame();
-        Tablero tablero = new Tablero();
-        tablero.printTablero();
     }
 
     /**
@@ -41,35 +40,93 @@ public class Ajedrez extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        Tablas = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        H2 = new javax.swing.JButton();
+        saveButton = new javax.swing.JButton();
+        surrenderButton = new javax.swing.JButton();
+        loadButton = new javax.swing.JButton();
+        startButton = new javax.swing.JButton();
+        actualPlayerLabel = new javax.swing.JLabel();
+        choosedBoxLabel = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        playHistoryTextField = new javax.swing.JTextArea();
+        tieButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chess");
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel1.setBackground(new java.awt.Color(86, 86, 69));
-        jPanel1.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        Tablas.setBackground(new java.awt.Color(86, 86, 69));
+        Tablas.setForeground(new java.awt.Color(0, 0, 0));
+        Tablas.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setText("jLabel1");
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -10, -1, -1));
+        Tablas.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -10, -1, -1));
 
-        //H2.setIcon(new javax.swing.ImageIcon(System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\peon.png"));
-        H2.setOpaque(false);
-        H2.setContentAreaFilled(false);
-        H2.setHorizontalAlignment(SwingConstants.CENTER);
-        H2.setPreferredSize(new java.awt.Dimension(45, 45));
-        H2.addActionListener(new java.awt.event.ActionListener() {
+        saveButton.setText("Guardar Partida");
+        saveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                H2ActionPerformed(evt);
+                saveButtonActionPerformed(evt);
             }
         });
-        jPanel1.add(H2, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 430, -1, -1));
+        Tablas.add(saveButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 430, 120, -1));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 680, 490));
+        surrenderButton.setText("Rendirse");
+        surrenderButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                surrenderButtonActionPerformed(evt);
+            }
+        });
+        Tablas.add(surrenderButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 430, 130, -1));
+
+        loadButton.setText("Cargar Partida");
+        loadButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadButtonActionPerformed(evt);
+            }
+        });
+        Tablas.add(loadButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 430, 130, -1));
+
+        startButton.setText("Empezar Partida");
+        startButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                startButtonActionPerformed(evt);
+            }
+        });
+        Tablas.add(startButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 430, -1, -1));
+
+        actualPlayerLabel.setForeground(new java.awt.Color(255, 255, 255));
+        actualPlayerLabel.setText("actualPlayer");
+        Tablas.add(actualPlayerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 450, -1, -1));
+
+        choosedBoxLabel.setForeground(new java.awt.Color(255, 255, 255));
+        choosedBoxLabel.setText("choosedBox");
+        Tablas.add(choosedBoxLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 450, -1, -1));
+
+        playHistoryTextField.setBackground(new java.awt.Color(222, 195, 150));
+        playHistoryTextField.setEditable(false);
+        DefaultCaret caret = (DefaultCaret)playHistoryTextField.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
+        playHistoryTextField.setColumns(20);
+        playHistoryTextField.setBorder(new LineBorder(Color.BLACK , 10));
+        playHistoryTextField.setForeground(new java.awt.Color(0, 0, 0));
+        playHistoryTextField.setRows(5);
+        playHistoryTextField.setMinimumSize(new java.awt.Dimension(190, 200));
+        playHistoryTextField.setPreferredSize(new java.awt.Dimension(190, 200));
+        jScrollPane1.setViewportView(playHistoryTextField);
+
+        Tablas.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 0, 340, 440));
+
+        tieButton.setText("Tablas");
+        tieButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tieButtonActionPerformed(evt);
+            }
+        });
+        Tablas.add(tieButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 430, 130, -1));
+
+        getContentPane().add(Tablas, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 470));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -82,11 +139,10 @@ public class Ajedrez extends javax.swing.JFrame {
                 String positionBox = DataVerificator.IntToLetter(j) + rowTop;
                 JButton button = new javax.swing.JButton();
                 botones.put(positionBox, button);
-                button.setIcon(new javax.swing.ImageIcon(control.pathConstructor(i, j)));
                 //button.setOpaque(false);
                 //button.setContentAreaFilled(false);
                 button.setPreferredSize(new java.awt.Dimension(45, 45));
-                jPanel1.add(button, new org.netbeans.lib.awtextra.AbsoluteConstraints(x, y, -1, -1));     
+                Tablas.add(button, new org.netbeans.lib.awtextra.AbsoluteConstraints(x, y, -1, -1));     
                 button.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         pingButton(positionBox, botones);
@@ -94,50 +150,168 @@ public class Ajedrez extends javax.swing.JFrame {
                 });
                 }
         }
+        setGameStatic();
         tableroLabel.setIcon(new javax.swing.ImageIcon(System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\tablero.png"));
         tableroLabel.setText("jLabel1");
-        jPanel1.add(tableroLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 445, 428));
+        Tablas.add(tableroLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 445, 428));
         tableroLabel.getAccessibleContext().setAccessibleName("");        
 
     }
     
-    private void pingButton(String positionBox, Map<String, javax.swing.JButton> buttons){
-        System.out.println(positionBox);
-        int jugadorResultado = control.jugadorJuega(positionBox);
-        
-        if (jugadorResultado == 0)
-            System.out.println("Jugador ha elegido una pieza.");
-        else if (jugadorResultado == -1)
-            JOptionPane.showMessageDialog(this, "Posición no válida pa.", 
-                    "Notificación", JOptionPane.ERROR_MESSAGE);
-        else{
-            String firstBox = control.getActualPositionBox();
-            JButton firstAccessed = new javax.swing.JButton();
-            System.out.println("Boton de donde se toma la pieza: " + firstBox);
-            // Obtiene el primer botón acessado.
-            for (String actualBox: buttons.keySet()){
-                if (actualBox.equals(firstBox)){
-                    firstAccessed = buttons.get(actualBox);
-                    break;
-                }
+    private void updateButtonsIcons(){
+        //boolean status = gameReady;
+        //gameReady = false;
+        control.printTablero();
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                int rowTop = 8 - i;
+                String positionBox = DataVerificator.IntToLetter(j) + rowTop;
+                JButton button = botones.get(positionBox);
+                button.setIcon(new javax.swing.ImageIcon(control.pathConstructor(i, j)));
             }
-                // Obtiene el botón acessado recientemente.
-                JButton newestAccessed = buttons.get(positionBox);
-                List <Integer> coords = (ArrayList) DataVerificator.boxPositionValues(firstBox);
-
-                // Al nuevo botón se le asigna la imagen del viejo.
-                newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
-                firstAccessed.setIcon(null);
-                control.changePlayer(positionBox);
-            }
+        }
+        //gameReady = status;
     }
     
     
-    private void H2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_H2ActionPerformed
-        H2.setIcon(null);
-        System.out.println("done nigga");
-    }//GEN-LAST:event_H2ActionPerformed
+    
+    private void pingButton(String positionBox, Map<String, javax.swing.JButton> buttons){
+        if (gameReady){
+            int jugadorResultado = control.jugadorJuega(positionBox);
 
+            switch (jugadorResultado) {
+                case 0 -> {
+                    choosedBoxLabel.setVisible(true);
+                    choosedBoxLabel.setText("Casilla seleccionada: " + positionBox);
+                }
+                case -1 -> JOptionPane.showMessageDialog(this, "La posición no es válida, intente de nuevo.",
+                            "Notificación", JOptionPane.ERROR_MESSAGE);
+                default -> {
+                    String firstBox = control.getActualPositionBox();
+                    JButton firstAccessed = new javax.swing.JButton();
+                    System.out.println("Boton de donde se toma la pieza: " + firstBox);
+                    // Obtiene el primer botón acessado.
+                    for (String actualBox: buttons.keySet()){
+                        if (actualBox.equals(firstBox)){
+                            firstAccessed = buttons.get(actualBox);
+                            break;
+                        }
+                    }
+                    // Obtiene el botón acessado recientemente.
+                    JButton newestAccessed = buttons.get(positionBox);
+                    List <Integer> coords = (ArrayList) DataVerificator.boxPositionValues(firstBox);
+                    // Al nuevo botón se le asigna la imagen del viejo.
+                    newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
+                    // Al viejo se le asigna que no tenga imagen.
+                    firstAccessed.setIcon(null); 
+                    if(control.changePlayer(positionBox)){
+                        endGame(control.getEquipoActual());
+                    }else{
+                        playHistoryTextField.setText(control.getHistorialPlays());
+                        actualPlayerLabel.setText("Jugador actual: " + control.getEquipoActual());
+                        choosedBoxLabel.setVisible(false);
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
+            SaveMatch sm = new SaveMatch(this, true, control);
+            sm.setLocationRelativeTo(this);
+            sm.setVisible(true);        
+    }//GEN-LAST:event_saveButtonActionPerformed
+
+    private void loadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadButtonActionPerformed
+            // Se abre la ventana.
+            LoadMatch lm = new LoadMatch(this, true);
+            // Se guarda la instancia en el momento actual.
+            Control controlActual = control;
+            // Se abre el JDialog para obtener un cambio en el control.
+            lm.setLocationRelativeTo(this);
+            lm.setVisible(true);
+            // Si el archivo cambió entonces se van a actualizar los atributos, de no ser así se mantienen igual.
+            if (control != controlActual){
+                setGameViewable();
+                
+                String actualBox = control.getActualPositionBox();
+                if (!actualBox.equals("")){
+                    choosedBoxLabel.setVisible(true);
+                    choosedBoxLabel.setText("Casilla seleccionada: " + actualBox);
+                }else{
+                    System.out.println("No info.");
+                }
+
+                playHistoryTextField.setText(control.getHistorialPlays());
+                updateButtonsIcons();
+            }
+    }//GEN-LAST:event_loadButtonActionPerformed
+
+    private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
+        setGameViewable();
+    }//GEN-LAST:event_startButtonActionPerformed
+
+    private void surrenderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_surrenderButtonActionPerformed
+            String equipoActual = control.getEquipoActual();
+            int result = JOptionPane.showConfirmDialog(this, "¿Está seguro el jugador del equipo " + control.getEquipoActual()
+                    + " de rendirse?", "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            
+            if (result == JOptionPane.YES_OPTION){
+                String equipoContrario = equipoActual.equals("blanco")? "negro":"blanco";
+                endGame(equipoContrario);
+            }
+    }//GEN-LAST:event_surrenderButtonActionPerformed
+
+    private void tieButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tieButtonActionPerformed
+            int result = JOptionPane.showConfirmDialog(this, "¿Está seguro de empatar la partida? ", 
+                    "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (result == JOptionPane.YES_OPTION)
+                playAgain();
+    }//GEN-LAST:event_tieButtonActionPerformed
+
+    private void endGame(String winner){
+            JOptionPane.showMessageDialog(this, "El jugador del equipo " + winner + " ha ganado la partida.", 
+                    "Notificación", JOptionPane.INFORMATION_MESSAGE);
+            playAgain();
+    }
+    
+    private void playAgain(){
+             int result = JOptionPane.showConfirmDialog(this, "¿Desea volver a jugar otra partida?",
+                     "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+             if (result == JOptionPane.YES_OPTION){
+                 control.reiniciarJuego();
+                 setGameStatic();
+             }else{
+                 dispose();
+             }        
+    }
+    
+    
+    
+    private void setGameStatic(){
+        gameReady = false;
+        updateButtonsIcons();
+        loadButton.setVisible(true);
+        surrenderButton.setVisible(false);
+        tieButton.setVisible(false);
+        startButton.setVisible(true);
+        actualPlayerLabel.setVisible(false);
+        choosedBoxLabel.setVisible(false);
+        playHistoryTextField.setText("");
+        saveButton.setVisible(false);
+    }
+    
+    private void setGameViewable(){
+        gameReady = true;
+        startButton.setVisible(false);
+        loadButton.setVisible(false);
+        surrenderButton.setVisible(true);
+        tieButton.setVisible(true);
+        saveButton.setVisible(true);
+        actualPlayerLabel.setVisible(true);
+        actualPlayerLabel.setText("Jugador actual: " + control.getEquipoActual());      
+    }
     /**
      * @param args the command line arguments
      */
@@ -174,8 +348,16 @@ public class Ajedrez extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton H2;
+    private javax.swing.JPanel Tablas;
+    private javax.swing.JLabel actualPlayerLabel;
+    private javax.swing.JLabel choosedBoxLabel;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton loadButton;
+    private javax.swing.JTextArea playHistoryTextField;
+    private javax.swing.JButton saveButton;
+    private javax.swing.JButton startButton;
+    private javax.swing.JButton surrenderButton;
+    private javax.swing.JButton tieButton;
     // End of variables declaration//GEN-END:variables
 }
