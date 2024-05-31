@@ -98,11 +98,11 @@ public class Ajedrez extends javax.swing.JFrame {
 
         actualPlayerLabel.setForeground(new java.awt.Color(255, 255, 255));
         actualPlayerLabel.setText("actualPlayer");
-        Tablas.add(actualPlayerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 450, -1, -1));
+        Tablas.add(actualPlayerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 445, -1, -1));
 
         choosedBoxLabel.setForeground(new java.awt.Color(255, 255, 255));
         choosedBoxLabel.setText("choosedBox");
-        Tablas.add(choosedBoxLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 450, -1, -1));
+        Tablas.add(choosedBoxLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 445, -1, -1));
 
         playHistoryTextField.setBackground(new java.awt.Color(222, 195, 150));
         playHistoryTextField.setEditable(false);
@@ -186,6 +186,7 @@ public class Ajedrez extends javax.swing.JFrame {
                 }
                 case -1 -> JOptionPane.showMessageDialog(this, "La posición no es válida, intente de nuevo.",
                             "Notificación", JOptionPane.ERROR_MESSAGE);
+                case 2 -> control.castlingPlayer(positionBox);
                 default -> {
                     String firstBox = control.getActualPositionBox();
                     JButton firstAccessed = new javax.swing.JButton();

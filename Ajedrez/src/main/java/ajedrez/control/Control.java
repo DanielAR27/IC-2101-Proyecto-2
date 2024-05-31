@@ -49,9 +49,11 @@ public class Control implements Serializable {
    public int jugadorJuega(String positionBox){
        List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
        Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
+       if (board.checkCastling(actualPosition, nextPos)){
+           return 2;
        // Si la pieza es del mismo equipo que el equipo que tiene derecho a hacer la actual jugada
        // entonces se asigna como posición actual y se retorna un cero.
-        if (board.sameTeam(nextPos, turnoActual)){
+        }else if (board.sameTeam(nextPos, turnoActual)){
             actualPosition = nextPos;
             return 0;
         // En caso de que la jugada sea válida entonces se retorna un uno.
@@ -88,6 +90,20 @@ public class Control implements Serializable {
        }else
            return piece.getPath();
     }
+   
+   public void castlingPlayer(String positionBox){
+       String actualBox = getActualPositionBox();
+       actualPosition = null;
+        if (turnoActual.equals("B")){
+            jugadasHistorial += contador + ". " + actualBox + " ↔ " + positionBox + " ".repeat(10);
+            turnoActual = "N";
+        }else{
+            jugadasHistorial +=  actualBox + " ↔ " + positionBox + "\n";
+            turnoActual = "B";
+            contador++;
+        }
+        board.printTablero();
+   }
    
    public boolean changePlayer(String positionBox){
        List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);

@@ -6,10 +6,12 @@ import java.util.List;
 public abstract class Piece implements Serializable {
     protected Team equipo;
     protected Position actualPos;
+    protected boolean moved;
     
     public Piece (Team equipo, Position pos){
         this.equipo = equipo;
         this.actualPos = pos;
+        moved = false;
     }
     
     public String getEquipo(){
@@ -18,6 +20,14 @@ public abstract class Piece implements Serializable {
     
     public Position getPosition(){
         return actualPos;
+    }
+    
+    public boolean getMoveStatus(){
+        return moved;
+    }
+    
+    public void setMoved(){
+        moved = true;
     }
     
     public void setPosition(Position pos){

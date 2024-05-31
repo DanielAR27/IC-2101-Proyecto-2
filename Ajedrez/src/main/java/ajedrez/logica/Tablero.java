@@ -41,10 +41,10 @@ public class Tablero implements Serializable{
                         board.get(i).add(PieceFactory.createPiece("A", "N", piecePos));
                     // Agregar rey del equipo negro.
                     else if (i == 0 && j == 3)
-                        board.get(i).add(PieceFactory.createPiece("K", "N", piecePos));
+                        board.get(i).add(PieceFactory.createPiece("Q", "N", piecePos));
                     // Agregar reina del equipo negro.
                     else if(i == 0 && j == 4)
-                        board.get(i).add(PieceFactory.createPiece("Q", "N", piecePos));
+                        board.get(i).add(PieceFactory.createPiece("K", "N", piecePos));
                     // Agregar peon del equipo negro.
                     else
                         board.get(i).add(PieceFactory.createPiece("P", "N", piecePos));
@@ -66,9 +66,9 @@ public class Tablero implements Serializable{
                         board.get(i).add(PieceFactory.createPiece("A", "B", piecePos));
                     // Agregar rey del equipo blanco.
                     else if (i == 7 && j == 3)
-                        board.get(i).add(PieceFactory.createPiece("K", "B", piecePos));
-                    else
                         board.get(i).add(PieceFactory.createPiece("Q", "B", piecePos));
+                    else
+                        board.get(i).add(PieceFactory.createPiece("K", "B", piecePos));
                  // Se agrega la posición a las posiciones de piezas blancas.
                  whitePositions.add(piecePos);
                 // Agregar espacios vacios.    
@@ -82,6 +82,63 @@ public class Tablero implements Serializable{
     
     public Piece getPiece(Position p){
         return tablero.get(p.getRow()).get(p.getColumn());
+    }
+    
+    public void castlingPiece(Position kingPos, Position rookPos, int castleDirection){
+        if (!validPosition(kingPos) || !validPosition(rookPos))
+            throw new IllegalArgumentException("Position is not valid.");
+        
+        Position rookNewPos;
+        Position kingNewPos;
+        
+        Piece rook = getPiece(rookPos);
+        Piece king = getPiece(kingPos);
+         if (castleDirection == -1){
+            // Se cambia a donde estaba la torre.
+           tablero.get(rookPos.getRow()).set(rookPos.getColumn(), null);
+           // En la nueva posición se va a colocar la pieza de la 
+           tablero.get(rookPos.getRow()).set(rookPos.getColumn() + 3, rook);
+           rookNewPos = new Position(rookPos.getRow(), rookPos.getColumn() + 3);
+           
+           // Se cambia a donde estaba el rey.
+           tablero.get(kingPos.getRow()).set(kingPos.getColumn(), null);
+           // Se cambia a donde estaba la torre.
+           tablero.get(kingPos.getRow()).set(kingPos.getColumn() - 2, king);
+           kingNewPos = new Position(kingPos.getRow(), kingPos.getColumn() - 2);
+           
+         }else{
+            // Se cambia a donde estaba la torre.
+           tablero.get(rookPos.getRow()).set(rookPos.getColumn(), null);
+           // En la nueva posición se va a colocar la pieza de la 
+           tablero.get(rookPos.getRow()).set(rookPos.getColumn() - 2, rook);
+           rookNewPos = new Position(rookPos.getRow(), rookPos.getColumn() - 2);
+           
+           // Se cambia a donde estaba el rey.
+           tablero.get(kingPos.getRow()).set(kingPos.getColumn(), null);
+           // Se cambia a donde estaba la torre.
+           tablero.get(kingPos.getRow()).set(kingPos.getColumn() + 2, king);
+           kingNewPos = new Position(kingPos.getRow(), kingPos.getColumn() + 2);
+         }
+         
+         
+        if ("B".equals(king.getEquipo())){
+            whitePositions.remove(rookPos);
+            whitePositions.add(rookNewPos);            
+            whitePositions.remove(kingPos);
+            whitePositions.add(kingNewPos);
+        // El mismo caso para el equipo negro.
+        }else{
+            blackPositions.remove(rookPos);
+            blackPositions.add(rookNewPos);                   
+            blackPositions.remove(kingPos);
+            blackPositions.add(kingNewPos);
+        }   
+         
+           rook.setMoved();
+           king.setMoved();
+          
+          
+          
     }
         
     public boolean movePiece(Position actualPos, Position nextPos){
@@ -98,6 +155,9 @@ public class Tablero implements Serializable{
             blackPositions.remove(actualPos);
             blackPositions.add(nextPos);
         }
+        // Se cambia el estado de movimiento de la pieza si esta no se ha movido todavía.
+        if (!piece.getMoveStatus())
+            piece.setMoved();
         // Se cambia la posición de la pieza.
         piece.setPosition(nextPos);
         // Se obtiene la pieza de la siguiente posicion.
@@ -193,11 +253,71 @@ public class Tablero implements Serializable{
         return p.getRow() >= 0 && 7 >= p.getRow() && p.getColumn() >= 0 && 7 >= p.getColumn();
     }
     
-    public boolean sameTeam(Position p, String team){
-        Piece piece = getPiece(p);
-        if (piece == null){
+    public boolean checkCastling(Position firstPos, Position secondPos){
+        if (firstPos == null)
+            return false;
+        
+        Piece firstPiece = getPiece(firstPos);
+        Piece secondPiece = getPiece(secondPos);
+        
+        if (firstPiece == null || secondPiece == null)
+            return false;
+        if (checkSameType(firstPiece, secondPiece) || !sameTeam(firstPos, firstPiece.getEquipo()))
+            return false;
+        if (firstPiece.getMoveStatus() || secondPiece.getMoveStatus())
+            return false;
+        
+        System.out.println("we are here");
+        if (firstPiece instanceof Rey && secondPiece instanceof Torre){
+            int start = firstPos.getColumn();
+            int stop = secondPos.getColumn();
+            int iterator = stop == 0? -1:1;
+            System.out.println("got here");
+            // Se revisa que las posiciones entre el rey y la torre se encuentren vacías.
+            for (int i = start + iterator; i != stop; i += iterator){
+               if (getPiece(new Position(firstPos.getRow(), i)) != null)
+                    return false;
+            }
+            System.out.println("got here also");
+            ArrayList<Position> kingPositions = (ArrayList) firstPiece.getMoves(this);
+            kingPositions.add(secondPos);
+            if(getSecurePositions(kingPositions, firstPos).contains(secondPos)){
+                castlingPiece(firstPos, secondPos, iterator);
+                return true;
+            }else{
+                return false;
+            }
+             
+        }else if (secondPiece instanceof Rey && firstPiece instanceof Rey){
+            int start = secondPos.getColumn();
+            int stop = firstPos.getColumn();
+            int iterator = stop == 0? -1:1;
+            // Se revisa que las posiciones entre el rey y la torre se encuentren vacías.
+            for (int i = start + iterator; i != stop; i += iterator){
+               if (getPiece(new Position(secondPos.getRow(), i)) != null)
+                    return false;
+            }
+            ArrayList<Position> kingPositions = (ArrayList) secondPiece.getMoves(this);
+            kingPositions.add(firstPos);
+            if(getSecurePositions(kingPositions, secondPos).contains(firstPos)){
+                castlingPiece(secondPos, firstPos, iterator);
+                return true;
+            }else{
+                return false;
+            }    
+        }else{
             return false;
         }
+    }
+    
+    public boolean checkSameType(Piece firstPiece, Piece secondPiece){
+        return firstPiece.getClass() == secondPiece.getClass();
+    }
+    
+    public boolean sameTeam(Position p, String team){
+        Piece piece = getPiece(p);
+        if (piece == null)
+            return false;
         return piece.equipo.toString().equals(team);
     }
         

@@ -6,6 +6,7 @@ import java.util.List;
 public class Torre extends Piece {
     public Torre(Team equipo, Position pos){
         super(equipo, pos);
+        moved = false;
     }
     
     @Override
