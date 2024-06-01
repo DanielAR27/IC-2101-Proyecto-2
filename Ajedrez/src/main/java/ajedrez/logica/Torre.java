@@ -6,7 +6,6 @@ import java.util.List;
 public class Torre extends Piece {
     public Torre(Team equipo, Position pos){
         super(equipo, pos);
-        moved = false;
     }
     
     @Override
@@ -94,6 +93,11 @@ public class Torre extends Piece {
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\torre_negra.png";
     }
 
+    @Override
+    public String getType(){
+        return "T";
+    }    
+    
   @Override
    public String toString(){
        if (equipo.name().equals("BLANCO"))

@@ -41,6 +41,11 @@ public class Caballo extends Piece{
         else
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\caballo_negro.png";
     }
+
+    @Override
+    public String getType(){
+        return "C";
+    }
     
    @Override
    public String toString(){

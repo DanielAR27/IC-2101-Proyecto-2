@@ -8,45 +8,36 @@ public abstract class Piece implements Serializable {
     protected Position actualPos;
     protected boolean moved;
     
-    public Piece (Team equipo, Position pos){
+    public Piece(Team equipo, Position pos) {
         this.equipo = equipo;
         this.actualPos = pos;
         moved = false;
     }
     
-    public String getEquipo(){
+    public String getEquipo() {
         return equipo.toString();
     }
     
-    public Position getPosition(){
+    public Position getPosition() {
         return actualPos;
     }
     
-    public boolean getMoveStatus(){
-        return moved;
-    }
-    
-    public void setMoved(){
-        moved = true;
-    }
-    
-    public void setPosition(Position pos){
+    public void setPosition(Position pos) {
         this.actualPos = pos;
     }
     
-    public boolean validCapture(Tablero t, Position p){
-        if (t.validPosition(p)){
-            //System.out.println("is valid.");
-            if (t.getPiece(p) != null){
-                //System.out.println("piece is not null: "+ t.getPiece(p));
+    public boolean validCapture(Tablero t, Position p) {
+        if (t.validPosition(p)) {
+            if (t.getPiece(p) != null) {
                 if (!t.getPiece(actualPos).getEquipo().equals(t.getPiece(p).getEquipo()))
-                 return true;
+                    return true;
             }
         }
-        //System.out.println("piece is null dawg");
         return false;
     }
     
     public abstract List<Position> getMoves(Tablero t);
     public abstract String getPath();
+    public abstract String getType();
+    
 }

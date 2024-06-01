@@ -49,11 +49,9 @@ public class Control implements Serializable {
    public int jugadorJuega(String positionBox){
        List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
        Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
-       if (board.checkCastling(actualPosition, nextPos)){
-           return 2;
        // Si la pieza es del mismo equipo que el equipo que tiene derecho a hacer la actual jugada
        // entonces se asigna como posición actual y se retorna un cero.
-        }else if (board.sameTeam(nextPos, turnoActual)){
+        if (board.sameTeam(nextPos, turnoActual)){
             actualPosition = nextPos;
             return 0;
         // En caso de que la jugada sea válida entonces se retorna un uno.
@@ -91,39 +89,31 @@ public class Control implements Serializable {
            return piece.getPath();
     }
    
-   public void castlingPlayer(String positionBox){
-       String actualBox = getActualPositionBox();
-       actualPosition = null;
+    public boolean changePlayer(String positionBox){
+        List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
+        String pieceInfo = board.getPiece(actualPosition).toString();
+        String actualBox = getActualPositionBox();
+        Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
+        boolean gameOver = board.movePiece(actualPosition, nextPos);
+        actualPosition = null;
+       
+        // Se verifica si hay jaque mate
+        String opposingTeam = turnoActual.equals("B") ? "N" : "B";
+        if (board.jaqueMate(opposingTeam)) {
+            return true; // Termina el juego si hay jaque mate
+        }
+
         if (turnoActual.equals("B")){
-            jugadasHistorial += contador + ". " + actualBox + " ↔ " + positionBox + " ".repeat(10);
+            jugadasHistorial += contador + ". " + actualBox + " → " + positionBox + " [" + pieceInfo +"]" + " ".repeat(10);
             turnoActual = "N";
-        }else{
-            jugadasHistorial +=  actualBox + " ↔ " + positionBox + "\n";
+        } else {
+            jugadasHistorial += actualBox + " → " + positionBox + " [" + pieceInfo +"] \n";
             turnoActual = "B";
             contador++;
         }
-        board.printTablero();
-   }
-   
-   public boolean changePlayer(String positionBox){
-       List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
-       String pieceInfo = board.getPiece(actualPosition).toString();
-       String actualBox = getActualPositionBox();
-       Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
-       boolean gameOver = board.movePiece(actualPosition, nextPos);
-       actualPosition = null;
-       if (gameOver == false){
-            if (turnoActual.equals("B")){
-                jugadasHistorial += contador + ". " + actualBox + " → " + positionBox + " [" +pieceInfo +"]" + " ".repeat(10);
-                turnoActual = "N";
-            }else{
-                jugadasHistorial +=  actualBox + " → " + positionBox + " [" + pieceInfo +"] \n";
-                turnoActual = "B";
-                contador++;
-            }
-       }
-       return gameOver;
-   }
+       
+        return false;
+    }
    
    public String getEquipoActual(){
        return turnoActual.equals("B")? "blanco":"negro";

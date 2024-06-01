@@ -113,6 +113,11 @@ public class Alfil extends Piece{
     }
     
     @Override
+    public String getType(){
+        return "A";
+    }
+    
+    @Override
     public String getPath(){
         if (equipo.toString().equals("B"))
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\alfil_blanco.png";

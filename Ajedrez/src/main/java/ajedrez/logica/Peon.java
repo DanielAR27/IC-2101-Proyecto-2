@@ -130,7 +130,12 @@ public class Peon extends Piece{
         else
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\peon_negro.png";
     }  
-   
+
+     @Override
+    public String getType(){
+        return "P";
+    }   
+    
    @Override
    public String toString(){
        if (equipo.name().equals("BLANCO"))

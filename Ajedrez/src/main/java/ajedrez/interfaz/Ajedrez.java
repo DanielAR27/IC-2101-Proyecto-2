@@ -186,7 +186,6 @@ public class Ajedrez extends javax.swing.JFrame {
                 }
                 case -1 -> JOptionPane.showMessageDialog(this, "La posición no es válida, intente de nuevo.",
                             "Notificación", JOptionPane.ERROR_MESSAGE);
-                case 2 -> control.castlingPlayer(positionBox);
                 default -> {
                     String firstBox = control.getActualPositionBox();
                     JButton firstAccessed = new javax.swing.JButton();

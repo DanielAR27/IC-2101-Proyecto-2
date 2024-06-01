@@ -166,6 +166,11 @@ public class Reina extends Piece {
         else
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\reina_negra.png";
     }
+ 
+    @Override
+    public String getType(){
+        return "Q";
+    }    
     
    @Override
    public String toString(){

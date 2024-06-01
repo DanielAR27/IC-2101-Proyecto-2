@@ -35,6 +35,11 @@ public class Rey extends Piece{
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\rey_negro.png";
     }
 
+    @Override
+    public String getType(){
+        return "K";
+    }    
+    
    @Override
    public String toString(){
        if (equipo.name().equals("BLANCO"))
