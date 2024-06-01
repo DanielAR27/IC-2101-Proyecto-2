@@ -186,19 +186,71 @@ public class Ajedrez extends javax.swing.JFrame {
                 }
                 case -1 -> JOptionPane.showMessageDialog(this, "La posición no es válida, intente de nuevo.",
                             "Notificación", JOptionPane.ERROR_MESSAGE);
-                default -> {
-                    String firstBox = control.getActualPositionBox();
-                    JButton firstAccessed = new javax.swing.JButton();
-                    System.out.println("Boton de donde se toma la pieza: " + firstBox);
-                    // Obtiene el primer botón acessado.
-                    for (String actualBox: buttons.keySet()){
-                        if (actualBox.equals(firstBox)){
-                            firstAccessed = buttons.get(actualBox);
-                            break;
+                case 1->{
+                        // Se obtiene la casilla que fue consultada primeramente.
+                        String firstBox = control.getActualPositionBox();
+                        boolean towerAtStart;
+                        
+                        List<Integer> kingCoords;
+                        List<Integer> rookCoords;
+                        
+                        JButton kingButton;
+                        JButton rookButton;
+                        
+                        JButton oldKingButton = botones.get(firstBox);
+                        JButton oldRookButton = botones.get(positionBox);
+
+                        // Si la columna es "E" entonces es por que la primera casilla corresponda al rey.
+                        boolean firstIsKing = firstBox.substring(0, 1).equals("E");
+
+                        // Se revisa si la que fue seleccionada primero corresponde al rey.
+                        if (firstIsKing){
+                            kingCoords = (ArrayList) DataVerificator.boxPositionValues(firstBox);
+                            rookCoords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
+                            towerAtStart = positionBox.substring(0, 1).equals("A");
+                            control.castlePlay(firstBox, positionBox, towerAtStart);                                                          
+                        // En caso de no serlo, se manejará la jugada con la otra casilla.
+                        }else{
+                            kingCoords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
+                            rookCoords = (ArrayList) DataVerificator.boxPositionValues(firstBox);
+                            towerAtStart = firstBox.substring(0, 1).equals("A");
+                            control.castlePlay(positionBox, firstBox, towerAtStart);
                         }
-                    }
+                        
+                        // Torre del inicio
+                        if(towerAtStart){
+
+                            kingButton = botones.get("C"+firstBox.substring(1));
+                            rookButton = botones.get("D"+firstBox.substring(1));
+
+                            kingButton.setIcon(new javax.swing.ImageIcon(control.pathConstructor(kingCoords.get(0), kingCoords.get(1) - 2)));
+                            rookButton.setIcon(new javax.swing.ImageIcon(control.pathConstructor(rookCoords.get(0), rookCoords.get(1) + 3)));
+                        // Torre del final                                
+                        }else{
+                            kingButton = botones.get("G"+firstBox.substring(1));
+                            rookButton = botones.get("F"+firstBox.substring(1));
+
+                            kingButton.setIcon(new javax.swing.ImageIcon(control.pathConstructor(kingCoords.get(0), kingCoords.get(1) + 2)));
+                            rookButton.setIcon(new javax.swing.ImageIcon(control.pathConstructor(rookCoords.get(0), rookCoords.get(1) - 2)));                         
+                        }                        
+                        
+                        
+                       oldKingButton.setIcon(null);
+                       oldRookButton.setIcon(null);
+                       
+                        playHistoryTextField.setText(control.getHistorialPlays());
+                        actualPlayerLabel.setText("Jugador actual: " + control.getEquipoActual());
+                        choosedBoxLabel.setVisible(false);                        
+                        System.out.println("done");            
+                }
+                default -> {
+                    // Se obtiene la casilla que fue consultada primeramente.
+                    String firstBox = control.getActualPositionBox();
+                    // Se obtiene el botón que fue consultado primeramente.
+                    JButton firstAccessed = getFirstAccesedButton();
                     // Obtiene el botón acessado recientemente.
-                    JButton newestAccessed = buttons.get(positionBox);
+                    JButton newestAccessed = botones.get(positionBox);
+                    // Se obtienen las coordenadas relativas a la casilla que fue seleccionada primeramente.
                     List <Integer> coords = (ArrayList) DataVerificator.boxPositionValues(firstBox);
                     // Al nuevo botón se le asigna la imagen del viejo.
                     newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
@@ -215,7 +267,19 @@ public class Ajedrez extends javax.swing.JFrame {
             }
         }
     }
-    
+ 
+    private JButton getFirstAccesedButton(){
+        String firstBox = control.getActualPositionBox();
+        JButton firstAccessed = new javax.swing.JButton();
+        // Obtiene el primer botón acessado.
+        for (String actualBox: botones.keySet()){
+            if (actualBox.equals(firstBox)){
+                firstAccessed = botones.get(actualBox);
+                break;
+            }
+        }
+        return firstAccessed;
+    }    
     
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
             SaveMatch sm = new SaveMatch(this, true, control);

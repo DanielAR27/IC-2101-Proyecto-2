@@ -8,9 +8,9 @@ public abstract class Piece implements Serializable {
     protected Position actualPos;
     protected boolean moved;
     
-    public Piece(Team equipo, Position pos) {
+    public Piece(Team equipo, Position position) {
         this.equipo = equipo;
-        this.actualPos = pos;
+        actualPos = position;
         moved = false;
     }
     
@@ -18,12 +18,12 @@ public abstract class Piece implements Serializable {
         return equipo.toString();
     }
     
-    public Position getPosition() {
-        return actualPos;
+    public void setMoved(){
+        moved = true;
     }
     
-    public void setPosition(Position pos) {
-        this.actualPos = pos;
+    public void setPosition(Position position) {
+        actualPos = position;
     }
     
     public boolean validCapture(Tablero t, Position p) {

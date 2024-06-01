@@ -2,7 +2,9 @@ package ajedrez.control;
 
 import ajedrez.logica.Piece;
 import ajedrez.logica.Position;
+import ajedrez.logica.Rey;
 import ajedrez.logica.Tablero;
+import ajedrez.logica.Torre;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -48,15 +50,33 @@ public class Control implements Serializable {
     
    public int jugadorJuega(String positionBox){
        List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
+       
        Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
        // Si la pieza es del mismo equipo que el equipo que tiene derecho a hacer la actual jugada
        // entonces se asigna como posición actual y se retorna un cero.
         if (board.sameTeam(nextPos, turnoActual)){
-            actualPosition = nextPos;
-            return 0;
+            if (actualPosition == null){
+                actualPosition = nextPos;
+                return 0;
+            }else{
+                Piece firstPiece = board.getPiece(actualPosition);
+                Piece secondPiece = board.getPiece(nextPos);
+                boolean castlingIdentified = (firstPiece instanceof Rey) && (secondPiece instanceof Torre) ||
+                        (secondPiece instanceof Rey) && (firstPiece instanceof Torre);
+                if (castlingIdentified){
+                    System.out.println("castling identificado");
+                    boolean castlingDecision = firstPiece instanceof Rey?
+                            board.validCastling(firstPiece,secondPiece):
+                            board.validCastling(secondPiece, firstPiece);
+                    return castlingDecision? 1:-1;
+                }else{
+                    actualPosition = nextPos;
+                    return 0;
+                }                
+            }
         // En caso de que la jugada sea válida entonces se retorna un uno.
         }else if (board.validMove(actualPosition, nextPos)){
-             return 1;
+             return 2;
         // Si no se cumplen ninguno de los dos casos mencionados entonces se retorna un menos uno
         // indicando que no se puede efectuar la jugada.
         }else{
@@ -89,8 +109,29 @@ public class Control implements Serializable {
            return piece.getPath();
     }
    
+    public void castlePlay(String kingBox, String rookBox, boolean towerAtStart){
+           List<Integer> kingCoords = (ArrayList) DataVerificator.boxPositionValues(kingBox);
+           List<Integer> rookCoords = (ArrayList) DataVerificator.boxPositionValues(rookBox);
+
+           Position kingPos = obtenerPosition(kingCoords.get(0), kingCoords.get(1));
+           Position rookPos = obtenerPosition(rookCoords.get(0), rookCoords.get(1));
+
+           board.castleMove(kingPos, rookPos, towerAtStart);
+           board.printTablero();
+
+            if (turnoActual.equals("B")){
+                jugadasHistorial += contador + ". " + kingBox + " ↔ " + rookBox +  " ".repeat(10);
+                turnoActual = "N";
+            } else {
+                jugadasHistorial += kingBox + " ↔ " + rookBox + "\n";
+                turnoActual = "B";
+                contador++;
+            }       
+       }   
+   
     public boolean changePlayer(String positionBox){
         List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
+        
         String pieceInfo = board.getPiece(actualPosition).toString();
         String actualBox = getActualPositionBox();
         Position nextPos = obtenerPosition(coords.get(0), coords.get(1));

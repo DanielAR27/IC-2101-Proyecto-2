@@ -33,9 +33,9 @@ public class Tablero implements Serializable {
                     else if (i == 0 && (j == 2 || j == 5))
                         board.get(i).add(PieceFactory.createPiece("A", "N", piecePos));
                     else if (i == 0 && j == 3)
-                        board.get(i).add(PieceFactory.createPiece("K", "N", piecePos));
-                    else if (i == 0 && j == 4)
                         board.get(i).add(PieceFactory.createPiece("Q", "N", piecePos));
+                    else if (i == 0 && j == 4)
+                        board.get(i).add(PieceFactory.createPiece("K", "N", piecePos));
                     else
                         board.get(i).add(PieceFactory.createPiece("P", "N", piecePos));
                     blackPositions.add(piecePos);
@@ -49,9 +49,9 @@ public class Tablero implements Serializable {
                     else if (i == 7 && (j == 2 || j == 5))
                         board.get(i).add(PieceFactory.createPiece("A", "B", piecePos));
                     else if (i == 7 && j == 3)
-                        board.get(i).add(PieceFactory.createPiece("K", "B", piecePos));
-                    else
                         board.get(i).add(PieceFactory.createPiece("Q", "B", piecePos));
+                    else
+                        board.get(i).add(PieceFactory.createPiece("K", "B", piecePos));
                     whitePositions.add(piecePos);
                 } else {
                     board.get(i).add(null);
@@ -64,6 +64,20 @@ public class Tablero implements Serializable {
     public Piece getPiece(Position p) {
         return tablero.get(p.getRow()).get(p.getColumn());
     }
+    
+    public void setPiece(Position p, Piece piece){
+        tablero.get(p.getRow()).set(p.getColumn(), piece);
+    }
+    
+    public void replacePosition(String team, Position beforePos, Position afterPos){
+        if ("B".equals(team)) {
+            whitePositions.remove(beforePos);
+            whitePositions.add(afterPos);
+        } else {
+            blackPositions.remove(beforePos);
+            blackPositions.add(afterPos);
+        }        
+    }
 
     public boolean movePiece(Position actualPos, Position nextPos) {
         if (!validPosition(actualPos) || !validPosition(nextPos))
@@ -72,15 +86,9 @@ public class Tablero implements Serializable {
         Piece piece = getPiece(actualPos);
         if (piece == null)
             throw new IllegalArgumentException("No piece at actual position.");
-
+        
         Piece nextPiece = getPiece(nextPos);
-        if ("B".equals(piece.getEquipo())) {
-            whitePositions.remove(actualPos);
-            whitePositions.add(nextPos);
-        } else {
-            blackPositions.remove(actualPos);
-            blackPositions.add(nextPos);
-        }
+        replacePosition(piece.getEquipo(), actualPos, nextPos);
 
         piece.setPosition(nextPos);
         if (nextPiece != null) {
@@ -89,11 +97,79 @@ public class Tablero implements Serializable {
             else
                 whitePositions.remove(nextPos);
         }
-
-        tablero.get(actualPos.getRow()).set(actualPos.getColumn(), null);
-        tablero.get(nextPos.getRow()).set(nextPos.getColumn(), piece);
+        
+        setPiece(actualPos, null);
+        setPiece(nextPos, piece);
+        
         return nextPiece instanceof Rey;
     }
+    
+    public boolean validCastling(Piece king, Piece rook){
+
+        // Verifica que las piezas no se hayan movido anteriormente.
+        if (king.moved || rook.moved)
+            return false;
+        
+        int row = king.actualPos.getRow();
+                
+        int start = king.actualPos.getColumn();
+        int stop = rook.actualPos.getColumn();
+        int iterator = stop == 0? -1:1;
+        for (int i = start + iterator; i < stop; i += iterator){
+            Position p = new Position(row, i);
+            if (getPiece(p) != null)
+                return false;
+        }
+        
+        int kingColumn = iterator == -1? start -2 : start + 2;
+        int rookColumn = iterator == -1? stop + 3 : stop - 2;
+        
+        Position nextKingPos = new Position(row, kingColumn);
+        Position nextRookPos = new Position(row, rookColumn);
+        
+       Tablero simulatedBoard = simulateMove(king.actualPos, nextKingPos);
+        simulatedBoard = simulatedBoard.simulateMove(rook.actualPos, nextRookPos);
+        
+        System.out.println("Resultado del castling: " + !simulatedBoard.jaque(king.getEquipo()));
+        // Retorna True si no hay jaque y False si hay jaque.
+        return !simulatedBoard.jaque(king.getEquipo());
+    }
+
+    public void castleMove(Position kingPos, Position rookPos, boolean towerAtStart){
+        Position nextKingPos;
+        Position nextRookPos;
+        
+        System.out.println("castleMove");
+        
+        Piece king = getPiece(kingPos);
+        Piece rook = getPiece(rookPos);
+        
+
+        if (towerAtStart){
+            nextKingPos = new Position(kingPos.getRow(), kingPos.getColumn() - 2);
+            nextRookPos = new Position(rookPos.getRow(), rookPos.getColumn() +3);          
+        }else{
+            nextKingPos = new Position(kingPos.getRow(), kingPos.getColumn() + 2);
+            nextRookPos = new Position(rookPos.getRow(), rookPos.getColumn() - 2);  
+        }
+        
+        // Se reemplaza en la lista de posiciones del mismo equuipo con la posición del rey.
+        replacePosition(king.getEquipo(), kingPos, nextKingPos);
+        king.setPosition(nextKingPos);
+        king.setMoved();
+        
+        // Se reemplaza en la lista de posiciones del mismo equipo pero con la posición de la torre.
+        replacePosition(rook.getEquipo(), rookPos, nextRookPos);
+        rook.setPosition(nextRookPos);
+        rook.setMoved();
+        
+        setPiece(kingPos, null);
+        setPiece(nextKingPos, king);
+ 
+        setPiece(rookPos, null);
+        setPiece(nextRookPos, rook);        
+  
+    }    
 
     public boolean validMove(Position actualPos, Position nextPos) {
         if (actualPos == null) {
@@ -138,6 +214,7 @@ public class Tablero implements Serializable {
     public boolean jaque(String team) {
         Position kingPosition = null;
         List<Position> enemyPositions = team.equals("B") ? blackPositions : whitePositions;
+        System.out.println(enemyPositions);
 
         for (Position pos : team.equals("B") ? whitePositions : blackPositions) {
             Piece piece = getPiece(pos);
