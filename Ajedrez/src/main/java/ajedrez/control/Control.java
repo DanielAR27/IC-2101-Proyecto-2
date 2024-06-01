@@ -1,5 +1,6 @@
 package ajedrez.control;
 
+import ajedrez.logica.Peon;
 import ajedrez.logica.Piece;
 import ajedrez.logica.Position;
 import ajedrez.logica.Rey;
@@ -76,13 +77,19 @@ public class Control implements Serializable {
             }
         // En caso de que la jugada sea válida entonces se retorna un uno.
         }else if (board.validMove(actualPosition, nextPos)){
-             return 2;
+            Piece piece = board.getPiece(actualPosition);
+            if (piece instanceof Peon && (nextPos.getRow() == 0 || nextPos.getRow() == 7))
+                return 2;
+            else
+                return 3;
         // Si no se cumplen ninguno de los dos casos mencionados entonces se retorna un menos uno
         // indicando que no se puede efectuar la jugada.
         }else{
+            System.out.println("jugada no valida");
             return -1;
         }
     }
+   
    
    // Get Plays Historial: Obtiene el historial de jugadas.
    public String getHistorialPlays(){
@@ -115,6 +122,7 @@ public class Control implements Serializable {
 
            Position kingPos = obtenerPosition(kingCoords.get(0), kingCoords.get(1));
            Position rookPos = obtenerPosition(rookCoords.get(0), rookCoords.get(1));
+           actualPosition = null;
 
            board.castleMove(kingPos, rookPos, towerAtStart);
            board.printTablero();
@@ -127,7 +135,34 @@ public class Control implements Serializable {
                 turnoActual = "B";
                 contador++;
             }       
-       }   
+       }
+    
+        public boolean promotePlay(String positionBox, String type){
+            List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
+            
+            String pieceInfo = board.getPiece(actualPosition).toString();
+            String actualBox = getActualPositionBox();
+            Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
+            board.promotionMove(actualPosition, nextPos, turnoActual, type);
+            board.printTablero();
+            actualPosition = null;
+            
+            String opposingTeam = turnoActual.equals("B")? "N"  :"B";
+            if (board.jaque(opposingTeam)){
+                return true;
+            }
+
+            if (turnoActual.equals("B")){
+                jugadasHistorial += contador + ". " + actualBox + " = " + positionBox + " [" + type + turnoActual +"]" + " ".repeat(10);
+                turnoActual = "N";
+            } else {
+                jugadasHistorial += actualBox + " = " + positionBox + " [" + type + turnoActual +"] \n";
+                turnoActual = "B";
+                contador++;
+            }
+
+            return false;
+        }
    
     public boolean changePlayer(String positionBox){
         List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
@@ -135,9 +170,11 @@ public class Control implements Serializable {
         String pieceInfo = board.getPiece(actualPosition).toString();
         String actualBox = getActualPositionBox();
         Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
-        boolean gameOver = board.movePiece(actualPosition, nextPos);
+        board.movePiece(actualPosition, nextPos);
+        board.printTablero();
         actualPosition = null;
        
+        
         // Se verifica si hay jaque mate
         String opposingTeam = turnoActual.equals("B") ? "N" : "B";
         if (board.jaqueMate(opposingTeam)) {

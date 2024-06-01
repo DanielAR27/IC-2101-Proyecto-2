@@ -168,8 +168,24 @@ public class Tablero implements Serializable {
  
         setPiece(rookPos, null);
         setPiece(nextRookPos, rook);        
-  
-    }    
+    }
+
+    public void promotionMove(Position actualPos, Position nextPos, String team, String type){
+        // Se crea la pieza con su tipo, su equipo y se le asigna la posición siguiente como posición actual.
+        Piece promotedPiece = PieceFactory.createPiece(type, team, nextPos);
+        
+        // Se asigna en la posición de la pieza actual nulo.
+        setPiece(actualPos, null);
+        
+        if (team.equals("B")){
+            // Se reemplaza la posición actual en la lista de posiciones ocupadas por el equipo blanco.
+            replacePosition("B", actualPos, nextPos);
+        }else{
+            replacePosition("N", actualPos, nextPos);
+        }
+        
+        setPiece(nextPos, promotedPiece);
+    }
 
     public boolean validMove(Position actualPos, Position nextPos) {
         if (actualPos == null) {
@@ -214,7 +230,6 @@ public class Tablero implements Serializable {
     public boolean jaque(String team) {
         Position kingPosition = null;
         List<Position> enemyPositions = team.equals("B") ? blackPositions : whitePositions;
-        System.out.println(enemyPositions);
 
         for (Position pos : team.equals("B") ? whitePositions : blackPositions) {
             Piece piece = getPiece(pos);

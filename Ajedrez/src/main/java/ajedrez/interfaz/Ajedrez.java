@@ -19,9 +19,9 @@ import javax.swing.text.DefaultCaret;
 
 
 public class Ajedrez extends javax.swing.JFrame {
-    private String actualButton;
     private boolean gameReady;
     protected Control control;
+
     private Map <String , javax.swing.JButton> botones;
     
     public Ajedrez() {
@@ -240,14 +240,34 @@ public class Ajedrez extends javax.swing.JFrame {
                        
                         playHistoryTextField.setText(control.getHistorialPlays());
                         actualPlayerLabel.setText("Jugador actual: " + control.getEquipoActual());
+                        choosedBoxLabel.setVisible(false);                                 
+                } case 2 ->{
+                    JButton firstAccessed = getFirstAccessedButton();
+                    JButton newestAccessed = botones.get(positionBox);
+                    // Se obtienen las coordenadas relativas a la casilla que fue seleccionada primeramente.
+                    List <Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
+                    
+                    PromotePawn pp = new PromotePawn(this, true);
+                    pp.setLocationRelativeTo(this);
+                    pp.setVisible(true);
+                    String type = pp.getResult();
+                    if(control.promotePlay(positionBox, type)){
+                         newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
+                        firstAccessed.setIcon(null);                       
+                        endGame(control.getEquipoActual());
+                    }else{
+                        newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
+                        firstAccessed.setIcon(null);
+                        playHistoryTextField.setText(control.getHistorialPlays());
+                        actualPlayerLabel.setText("Jugador actual: " + control.getEquipoActual());
                         choosedBoxLabel.setVisible(false);                        
-                        System.out.println("done");            
+                    }
                 }
                 default -> {
                     // Se obtiene la casilla que fue consultada primeramente.
                     String firstBox = control.getActualPositionBox();
                     // Se obtiene el botón que fue consultado primeramente.
-                    JButton firstAccessed = getFirstAccesedButton();
+                    JButton firstAccessed = getFirstAccessedButton();
                     // Obtiene el botón acessado recientemente.
                     JButton newestAccessed = botones.get(positionBox);
                     // Se obtienen las coordenadas relativas a la casilla que fue seleccionada primeramente.
@@ -268,7 +288,7 @@ public class Ajedrez extends javax.swing.JFrame {
         }
     }
  
-    private JButton getFirstAccesedButton(){
+    private JButton getFirstAccessedButton(){
         String firstBox = control.getActualPositionBox();
         JButton firstAccessed = new javax.swing.JButton();
         // Obtiene el primer botón acessado.
