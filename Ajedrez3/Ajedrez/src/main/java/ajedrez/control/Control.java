@@ -50,6 +50,8 @@ public class Control implements Serializable {
     
     public void reiniciarJuego(){
         board = new Tablero();
+        jugador1 = null;
+        jugador2 = null;
         actualPosition = null;
         turnoActual = "B";
     }
@@ -97,6 +99,7 @@ public class Control implements Serializable {
         // Si no se cumplen ninguno de los dos casos mencionados entonces se retorna un menos uno
         // indicando que no se puede efectuar la jugada.
         }else{
+            System.out.println("Equipo actual: " + turnoActual);
             System.out.println("jugada no valida");
             return -1;
         }
@@ -191,6 +194,10 @@ public class Control implements Serializable {
    public void savePlayerNames(String jugador1, String jugador2){
        this.jugador1 = jugador1;
        this.jugador2 = jugador2;
+   }
+   
+   public boolean playersSet(){
+       return jugador1 != null && jugador2 != null;
    }
    
    public void printTablero(){

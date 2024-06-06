@@ -36,7 +36,7 @@ public class SaveMatch extends javax.swing.JDialog {
         saveButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Save Game");
+        setTitle("Guardar Partida");
 
         jPanel1.setPreferredSize(new java.awt.Dimension(310, 164));
 
@@ -114,9 +114,10 @@ public class SaveMatch extends javax.swing.JDialog {
         JFileChooser j = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
         j.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int decision = j.showSaveDialog(null);
-        if (decision == JFileChooser.APPROVE_OPTION)
+        if (decision == JFileChooser.APPROVE_OPTION){
             directoryPath = j.getSelectedFile().getAbsolutePath() + "\\";
             directoryPathTextLabel.setText("Directory Path: " + j.getSelectedFile().getAbsolutePath());
+        }   
     }//GEN-LAST:event_openDirectoryButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed

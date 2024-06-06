@@ -35,12 +35,14 @@ public class LoadMatch extends javax.swing.JDialog {
         loadButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Cargar Partida");
+        setResizable(false);
 
         jPanel1.setPreferredSize(new java.awt.Dimension(310, 164));
 
         filePathTextLabel.setText("File Path:");
 
-        openDirectoryButton.setText("Abrir Directorio");
+        openDirectoryButton.setText("Abrir Archivo");
         openDirectoryButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 openDirectoryButtonActionPerformed(evt);
@@ -59,34 +61,33 @@ public class LoadMatch extends javax.swing.JDialog {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(filePathTextLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(openDirectoryButton)
-                        .addGap(18, 18, 18)
-                        .addComponent(loadButton)))
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addGap(24, 24, 24)
+                .addComponent(openDirectoryButton)
+                .addGap(33, 33, 33)
+                .addComponent(loadButton)
+                .addContainerGap(44, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(filePathTextLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(49, 49, 49)
+                .addGap(58, 58, 58)
                 .addComponent(filePathTextLabel)
                 .addGap(26, 26, 26)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(openDirectoryButton)
-                    .addComponent(loadButton))
-                .addContainerGap(49, Short.MAX_VALUE))
+                    .addComponent(loadButton)
+                    .addComponent(openDirectoryButton))
+                .addContainerGap(40, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -102,7 +103,7 @@ public class LoadMatch extends javax.swing.JDialog {
         int decision = j.showSaveDialog(null);
         if (decision == JFileChooser.APPROVE_OPTION){
             filePath = j.getSelectedFile().getAbsolutePath() + "\\";
-            filePathTextLabel.setText("File Path: " + j.getSelectedFile().getAbsolutePath());
+            filePathTextLabel.setText("File path: " + j.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_openDirectoryButtonActionPerformed
 
@@ -113,8 +114,9 @@ public class LoadMatch extends javax.swing.JDialog {
                         "Advertencia", JOptionPane.INFORMATION_MESSAGE);
                   dispose();            
         }catch(Exception e){
-                             JOptionPane.showMessageDialog(this, "Ha ocurrido algún error.", 
+                             JOptionPane.showMessageDialog(this, "El archivo no se ha podido cargar, intente con otro.", 
                         "Advertencia", JOptionPane.ERROR_MESSAGE);
+                             filePathTextLabel.setText("File path: ");
         }
     }//GEN-LAST:event_loadButtonActionPerformed
 

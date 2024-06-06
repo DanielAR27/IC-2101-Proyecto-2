@@ -1,5 +1,7 @@
 package ajedrez.interfaz;
 
+import javax.swing.WindowConstants;
+
 public class PromotePawn extends javax.swing.JDialog {
     private String promoteResult;
     /**
@@ -8,6 +10,7 @@ public class PromotePawn extends javax.swing.JDialog {
     public PromotePawn(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     }
 
     /**

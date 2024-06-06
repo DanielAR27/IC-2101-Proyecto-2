@@ -20,8 +20,6 @@ import javax.swing.text.DefaultCaret;
 
 public class Ajedrez extends javax.swing.JFrame {
     private boolean gameReady;
-    protected String jugador1;
-    protected String jugador2;
     protected Control control;
 
     private Map <String , javax.swing.JButton> botones;
@@ -185,7 +183,7 @@ public class Ajedrez extends javax.swing.JFrame {
                    choosedBoxLabel.setText("Casilla seleccionada: " + positionBox);
                 }
                 case -1 -> JOptionPane.showMessageDialog(this, "La posición no es válida, intente de nuevo.",
-                            "Notificación", JOptionPane.ERROR_MESSAGE); // CASO # -1: POSICIÓN NO VÁLIDA.
+                            "Notificación", JOptionPane.ERROR_MESSAGE); // CASO # -1: POSICION NO VALIDA.
                 case 1->{ // CASO #1: ENROQUE
                         // Se obtiene la casilla que fue consultada primeramente.
                         String firstBox = control.getActualPositionBox();
@@ -241,7 +239,7 @@ public class Ajedrez extends javax.swing.JFrame {
                         actualPlayerLabel.setText("Jugador actual: " + control.getJugadorActual());
                         actualTeamLabel.setText("Equipo actual: " + control.getEquipoActual());
                         choosedBoxLabel.setVisible(false);                                 
-                } case 2 ->{ // CASO #2: PROMOCIÓN DE PEÓN.
+                } case 2 ->{ // CASO #2: PROMOCION DE PEON.
                     JButton firstAccessed = getFirstAccessedButton();
                     JButton newestAccessed = botones.get(positionBox);
                     // Se obtienen las coordenadas relativas a la casilla que fue seleccionada primeramente.
@@ -254,7 +252,7 @@ public class Ajedrez extends javax.swing.JFrame {
                     if(control.promotePlay(positionBox, type)){
                          newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
                         firstAccessed.setIcon(null);                       
-                        endGame(control.getEquipoActual(), "Jaque Mate");
+                        endGame(control.getJugadorActual(), "Jaque Mate");
                     }else{
                         newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
                         firstAccessed.setIcon(null);
@@ -269,16 +267,16 @@ public class Ajedrez extends javax.swing.JFrame {
                     String firstBox = control.getActualPositionBox();
                     // Se obtiene el botón que fue consultado primeramente.
                     JButton firstAccessed = getFirstAccessedButton();
-                    // Obtiene el botón acessado recientemente.
+                    // Obtiene el boton acessado recientemente.
                     JButton newestAccessed = botones.get(positionBox);
                     // Se obtienen las coordenadas relativas a la casilla que fue seleccionada primeramente.
                     List <Integer> coords = (ArrayList) DataVerificator.boxPositionValues(firstBox);
-                    // Al nuevo botón se le asigna la imagen del viejo.
+                    // Al nuevo boton se le asigna la imagen del viejo.
                     newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
                     // Al viejo se le asigna que no tenga imagen.
                     firstAccessed.setIcon(null); 
                     if(control.changePlayer(positionBox)){
-                        endGame(control.getEquipoActual(), "Jaque Mate");
+                        endGame(control.getJugadorActual(), "Jaque Mate");
                     }else{
                         actualPlayerLabel.setText("Jugador actual: " + control.getJugadorActual());
                         actualTeamLabel.setText("Equipo actual: " + control.getEquipoActual());
@@ -293,7 +291,7 @@ public class Ajedrez extends javax.swing.JFrame {
     private JButton getFirstAccessedButton(){
         String firstBox = control.getActualPositionBox();
         JButton firstAccessed = new javax.swing.JButton();
-        // Obtiene el primer botón acessado.
+        // Obtiene el primer boton acessado.
         for (String actualBox: botones.keySet()){
             if (actualBox.equals(firstBox)){
                 firstAccessed = botones.get(actualBox);
@@ -337,17 +335,17 @@ public class Ajedrez extends javax.swing.JFrame {
         PlayerNames pn = new PlayerNames(this, true);
         pn.setLocationRelativeTo(this);
         pn.setVisible(true);
-        setGameViewable();
+        if (control.playersSet())
+            setGameViewable();
     }//GEN-LAST:event_startButtonActionPerformed
 
     private void surrenderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_surrenderButtonActionPerformed
             String equipoActual = control.getEquipoActual();
-            int result = JOptionPane.showConfirmDialog(this, "¿Está seguro el jugador del equipo " + control.getEquipoActual()
+            int result = JOptionPane.showConfirmDialog(this, "¿Está seguro el jugador " + control.getJugadorActual()
                     + " de rendirse?", "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             
-            if (result == JOptionPane.YES_OPTION){
-                String equipoContrario = equipoActual.equals("blanco")? "negro":"blanco";
-                endGame(equipoContrario, "Abandono");
+            if (result == JOptionPane.YES_OPTION){   
+                endGame(control.getJugadorOpuesto(), "Abandono");
             }
     }//GEN-LAST:event_surrenderButtonActionPerformed
 
@@ -366,7 +364,7 @@ public class Ajedrez extends javax.swing.JFrame {
     }//GEN-LAST:event_tieButtonActionPerformed
 
     private void endGame(String winner, String defeatReason){
-            JOptionPane.showMessageDialog(this, "El jugador del equipo " + winner + " ha ganado la partida.", 
+            JOptionPane.showMessageDialog(this, "El jugador " + winner + " ha ganado la partida.", 
                     defeatReason, JOptionPane.INFORMATION_MESSAGE);
             playAgain();
     }

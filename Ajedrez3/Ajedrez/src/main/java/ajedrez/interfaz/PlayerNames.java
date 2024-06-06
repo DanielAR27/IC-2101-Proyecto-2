@@ -30,7 +30,7 @@ public class PlayerNames extends javax.swing.JDialog {
         acceptButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Player Names");
+        setTitle("Nombres");
         setResizable(false);
 
         jLabel1.setText("Jugador #1 (equipo blanco): ");
