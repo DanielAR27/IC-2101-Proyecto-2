@@ -20,12 +20,14 @@ import javax.swing.text.DefaultCaret;
 
 public class Ajedrez extends javax.swing.JFrame {
     private boolean gameReady;
+    protected String jugador1;
+    protected String jugador2;
     protected Control control;
 
     private Map <String , javax.swing.JButton> botones;
     
     public Ajedrez() {
-        control = new Control();
+        control = Control.getInstance();
         botones = new TreeMap<>();
         initComponents();
         loadGame();
@@ -48,17 +50,17 @@ public class Ajedrez extends javax.swing.JFrame {
         startButton = new javax.swing.JButton();
         actualPlayerLabel = new javax.swing.JLabel();
         choosedBoxLabel = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        playHistoryTextField = new javax.swing.JTextArea();
         tieButton = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        piezasLabel = new javax.swing.JLabel();
+        actualTeamLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chess");
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        Tablas.setBackground(new java.awt.Color(86, 86, 69));
-        Tablas.setForeground(new java.awt.Color(0, 0, 0));
+        Tablas.setBackground(new java.awt.Color(244, 231, 214));
         Tablas.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setText("jLabel1");
@@ -96,27 +98,13 @@ public class Ajedrez extends javax.swing.JFrame {
         });
         Tablas.add(startButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 430, -1, -1));
 
-        actualPlayerLabel.setForeground(new java.awt.Color(255, 255, 255));
+        actualPlayerLabel.setForeground(new java.awt.Color(0, 0, 0));
         actualPlayerLabel.setText("actualPlayer");
-        Tablas.add(actualPlayerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 445, -1, -1));
+        Tablas.add(actualPlayerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 30, -1, -1));
 
-        choosedBoxLabel.setForeground(new java.awt.Color(255, 255, 255));
+        choosedBoxLabel.setForeground(new java.awt.Color(0, 0, 0));
         choosedBoxLabel.setText("choosedBox");
-        Tablas.add(choosedBoxLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 445, -1, -1));
-
-        playHistoryTextField.setBackground(new java.awt.Color(222, 195, 150));
-        playHistoryTextField.setEditable(false);
-        DefaultCaret caret = (DefaultCaret)playHistoryTextField.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
-        playHistoryTextField.setColumns(20);
-        playHistoryTextField.setBorder(new LineBorder(Color.BLACK , 10));
-        playHistoryTextField.setForeground(new java.awt.Color(0, 0, 0));
-        playHistoryTextField.setRows(5);
-        playHistoryTextField.setMinimumSize(new java.awt.Dimension(190, 200));
-        playHistoryTextField.setPreferredSize(new java.awt.Dimension(190, 200));
-        jScrollPane1.setViewportView(playHistoryTextField);
-
-        Tablas.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 0, 340, 440));
+        Tablas.add(choosedBoxLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 90, -1, -1));
 
         tieButton.setText("Tablas");
         tieButton.addActionListener(new java.awt.event.ActionListener() {
@@ -126,7 +114,19 @@ public class Ajedrez extends javax.swing.JFrame {
         });
         Tablas.add(tieButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 430, 130, -1));
 
-        getContentPane().add(Tablas, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 470));
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel2.setText("ⓇDrSmey");
+        Tablas.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 450, -1, -1));
+
+        piezasLabel.setForeground(new java.awt.Color(0, 0, 0));
+        piezasLabel.setIcon(new javax.swing.ImageIcon(System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\piezas.png"));
+        Tablas.add(piezasLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 110, 230, 340));
+
+        actualTeamLabel.setForeground(new java.awt.Color(0, 0, 0));
+        actualTeamLabel.setText("actualTeam");
+        Tablas.add(actualTeamLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 60, -1, -1));
+
+        getContentPane().add(Tablas, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 670, 470));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -139,8 +139,8 @@ public class Ajedrez extends javax.swing.JFrame {
                 String positionBox = DataVerificator.IntToLetter(j) + rowTop;
                 JButton button = new javax.swing.JButton();
                 botones.put(positionBox, button);
-                //button.setOpaque(false);
-                //button.setContentAreaFilled(false);
+                button.setOpaque(false);
+                button.setContentAreaFilled(false);
                 button.setPreferredSize(new java.awt.Dimension(45, 45));
                 Tablas.add(button, new org.netbeans.lib.awtextra.AbsoluteConstraints(x, y, -1, -1));     
                 button.addActionListener(new ActionListener() {
@@ -180,13 +180,13 @@ public class Ajedrez extends javax.swing.JFrame {
             int jugadorResultado = control.jugadorJuega(positionBox);
 
             switch (jugadorResultado) {
-                case 0 -> {
-                    choosedBoxLabel.setVisible(true);
-                    choosedBoxLabel.setText("Casilla seleccionada: " + positionBox);
+                case 0 -> { // CASO #0: SELECCIONAR CASILLA.
+                   choosedBoxLabel.setVisible(true);
+                   choosedBoxLabel.setText("Casilla seleccionada: " + positionBox);
                 }
                 case -1 -> JOptionPane.showMessageDialog(this, "La posición no es válida, intente de nuevo.",
-                            "Notificación", JOptionPane.ERROR_MESSAGE);
-                case 1->{
+                            "Notificación", JOptionPane.ERROR_MESSAGE); // CASO # -1: POSICIÓN NO VÁLIDA.
+                case 1->{ // CASO #1: ENROQUE
                         // Se obtiene la casilla que fue consultada primeramente.
                         String firstBox = control.getActualPositionBox();
                         boolean towerAtStart;
@@ -235,13 +235,13 @@ public class Ajedrez extends javax.swing.JFrame {
                         }                        
                         
                         
-                       oldKingButton.setIcon(null);
-                       oldRookButton.setIcon(null);
+                        oldKingButton.setIcon(null);
+                        oldRookButton.setIcon(null);
                        
-                        playHistoryTextField.setText(control.getHistorialPlays());
-                        actualPlayerLabel.setText("Jugador actual: " + control.getEquipoActual());
+                        actualPlayerLabel.setText("Jugador actual: " + control.getJugadorActual());
+                        actualTeamLabel.setText("Equipo actual: " + control.getEquipoActual());
                         choosedBoxLabel.setVisible(false);                                 
-                } case 2 ->{
+                } case 2 ->{ // CASO #2: PROMOCIÓN DE PEÓN.
                     JButton firstAccessed = getFirstAccessedButton();
                     JButton newestAccessed = botones.get(positionBox);
                     // Se obtienen las coordenadas relativas a la casilla que fue seleccionada primeramente.
@@ -254,16 +254,17 @@ public class Ajedrez extends javax.swing.JFrame {
                     if(control.promotePlay(positionBox, type)){
                          newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
                         firstAccessed.setIcon(null);                       
-                        endGame(control.getEquipoActual());
+                        endGame(control.getEquipoActual(), "Jaque Mate");
                     }else{
                         newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
                         firstAccessed.setIcon(null);
-                        playHistoryTextField.setText(control.getHistorialPlays());
-                        actualPlayerLabel.setText("Jugador actual: " + control.getEquipoActual());
+                        
+                        actualPlayerLabel.setText("Jugador actual: " + control.getJugadorActual());
+                        actualTeamLabel.setText("Equipo actual: " + control.getEquipoActual());
                         choosedBoxLabel.setVisible(false);                        
                     }
                 }
-                default -> {
+                default -> { // CASO #3:  MOVIMIENTO NORMAL DE PIEZA.
                     // Se obtiene la casilla que fue consultada primeramente.
                     String firstBox = control.getActualPositionBox();
                     // Se obtiene el botón que fue consultado primeramente.
@@ -277,10 +278,10 @@ public class Ajedrez extends javax.swing.JFrame {
                     // Al viejo se le asigna que no tenga imagen.
                     firstAccessed.setIcon(null); 
                     if(control.changePlayer(positionBox)){
-                        endGame(control.getEquipoActual());
+                        endGame(control.getEquipoActual(), "Jaque Mate");
                     }else{
-                        playHistoryTextField.setText(control.getHistorialPlays());
-                        actualPlayerLabel.setText("Jugador actual: " + control.getEquipoActual());
+                        actualPlayerLabel.setText("Jugador actual: " + control.getJugadorActual());
+                        actualTeamLabel.setText("Equipo actual: " + control.getEquipoActual());
                         choosedBoxLabel.setVisible(false);
                     }
                 }
@@ -328,12 +329,14 @@ public class Ajedrez extends javax.swing.JFrame {
                     System.out.println("No info.");
                 }
 
-                playHistoryTextField.setText(control.getHistorialPlays());
                 updateButtonsIcons();
             }
     }//GEN-LAST:event_loadButtonActionPerformed
 
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
+        PlayerNames pn = new PlayerNames(this, true);
+        pn.setLocationRelativeTo(this);
+        pn.setVisible(true);
         setGameViewable();
     }//GEN-LAST:event_startButtonActionPerformed
 
@@ -344,20 +347,27 @@ public class Ajedrez extends javax.swing.JFrame {
             
             if (result == JOptionPane.YES_OPTION){
                 String equipoContrario = equipoActual.equals("blanco")? "negro":"blanco";
-                endGame(equipoContrario);
+                endGame(equipoContrario, "Abandono");
             }
     }//GEN-LAST:event_surrenderButtonActionPerformed
 
     private void tieButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tieButtonActionPerformed
-            int result = JOptionPane.showConfirmDialog(this, "¿Está seguro de empatar la partida? ", 
+            int actualPlayerResult = JOptionPane.showConfirmDialog(this, "Jugador " + control.getJugadorActual() + " ¿Desea hacer tablas?", 
                     "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (result == JOptionPane.YES_OPTION)
-                playAgain();
+            if (actualPlayerResult == JOptionPane.YES_OPTION){
+                int otherPlayerResult = JOptionPane.showConfirmDialog(this, "Jugador " + control.getJugadorOpuesto() + " ¿Desea hacer tablas?", 
+                        "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (otherPlayerResult == JOptionPane.YES_OPTION){
+                    JOptionPane.showMessageDialog(this, "Ambos jugadores han empatado la partida.", 
+                            "Tablas", JOptionPane.INFORMATION_MESSAGE);                    
+                    playAgain();
+                }
+            }
     }//GEN-LAST:event_tieButtonActionPerformed
 
-    private void endGame(String winner){
+    private void endGame(String winner, String defeatReason){
             JOptionPane.showMessageDialog(this, "El jugador del equipo " + winner + " ha ganado la partida.", 
-                    "Notificación", JOptionPane.INFORMATION_MESSAGE);
+                    defeatReason, JOptionPane.INFORMATION_MESSAGE);
             playAgain();
     }
     
@@ -371,9 +381,7 @@ public class Ajedrez extends javax.swing.JFrame {
                  dispose();
              }        
     }
-    
-    
-    
+        
     private void setGameStatic(){
         gameReady = false;
         updateButtonsIcons();
@@ -382,8 +390,8 @@ public class Ajedrez extends javax.swing.JFrame {
         tieButton.setVisible(false);
         startButton.setVisible(true);
         actualPlayerLabel.setVisible(false);
+        actualTeamLabel.setVisible(false);
         choosedBoxLabel.setVisible(false);
-        playHistoryTextField.setText("");
         saveButton.setVisible(false);
     }
     
@@ -395,7 +403,9 @@ public class Ajedrez extends javax.swing.JFrame {
         tieButton.setVisible(true);
         saveButton.setVisible(true);
         actualPlayerLabel.setVisible(true);
-        actualPlayerLabel.setText("Jugador actual: " + control.getEquipoActual());      
+        actualTeamLabel.setVisible(true);
+        actualPlayerLabel.setText("Jugador actual: " + control.getJugadorActual());
+        actualTeamLabel.setText("Equipo actual: " + control.getEquipoActual());
     }
     /**
      * @param args the command line arguments
@@ -435,11 +445,12 @@ public class Ajedrez extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Tablas;
     private javax.swing.JLabel actualPlayerLabel;
+    private javax.swing.JLabel actualTeamLabel;
     private javax.swing.JLabel choosedBoxLabel;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JButton loadButton;
-    private javax.swing.JTextArea playHistoryTextField;
+    private javax.swing.JLabel piezasLabel;
     private javax.swing.JButton saveButton;
     private javax.swing.JButton startButton;
     private javax.swing.JButton surrenderButton;

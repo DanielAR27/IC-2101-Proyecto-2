@@ -18,28 +18,40 @@ import java.util.List;
 
 public class Control implements Serializable {
     private Position actualPosition;
-    private String jugadasHistorial;
+    private String jugador1;
+    private String jugador2;
+    private static Control instance = null;
     private String turnoActual;
     private Tablero board;
-    private int contador = 1;
     
     // Constructor
-    public Control(){
+    private Control(){
         board = new Tablero();
         actualPosition = null;
         turnoActual = "B";
-        jugadasHistorial = "";
+    }
+    
+    public static Control getInstance(){
+        instance = new Control();
+        return instance;
     }
     
     public Tablero getTablero(){
         return board;
     }
     
+   private void changeTeam(){
+       if (turnoActual.equals("B")){
+           turnoActual = "N";
+       }else{
+           turnoActual = "B";
+       }
+   }    
+    
     public void reiniciarJuego(){
         board = new Tablero();
         actualPosition = null;
         turnoActual = "B";
-        jugadasHistorial = "";
     }
         
     public Position obtenerPosition(int x, int y){
@@ -89,13 +101,7 @@ public class Control implements Serializable {
             return -1;
         }
     }
-   
-   
-   // Get Plays Historial: Obtiene el historial de jugadas.
-   public String getHistorialPlays(){
-       return jugadasHistorial;
-   }
-   
+    
    // Get Actual Position Box: Obtener la casilla del tablero en base a la posición actual.
    public String getActualPositionBox(){
        String positionBox = "";
@@ -126,43 +132,28 @@ public class Control implements Serializable {
 
            board.castleMove(kingPos, rookPos, towerAtStart);
            board.printTablero();
-
-            if (turnoActual.equals("B")){
-                jugadasHistorial += contador + ". " + kingBox + " ↔ " + rookBox +  " ".repeat(10);
-                turnoActual = "N";
-            } else {
-                jugadasHistorial += kingBox + " ↔ " + rookBox + "\n";
-                turnoActual = "B";
-                contador++;
-            }       
-       }
+           changeTeam();
+    }
     
-        public boolean promotePlay(String positionBox, String type){
-            List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
-            
-            String pieceInfo = board.getPiece(actualPosition).toString();
-            String actualBox = getActualPositionBox();
-            Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
-            board.promotionMove(actualPosition, nextPos, turnoActual, type);
-            board.printTablero();
-            actualPosition = null;
-            
-            String opposingTeam = turnoActual.equals("B")? "N"  :"B";
-            if (board.jaque(opposingTeam)){
-                return true;
-            }
+    public boolean promotePlay(String positionBox, String type){
+        List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
 
-            if (turnoActual.equals("B")){
-                jugadasHistorial += contador + ". " + actualBox + " = " + positionBox + " [" + type + turnoActual +"]" + " ".repeat(10);
-                turnoActual = "N";
-            } else {
-                jugadasHistorial += actualBox + " = " + positionBox + " [" + type + turnoActual +"] \n";
-                turnoActual = "B";
-                contador++;
-            }
+        String pieceInfo = board.getPiece(actualPosition).toString();
+        String actualBox = getActualPositionBox();
+        Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
+        board.promotionMove(actualPosition, nextPos, turnoActual, type);
+        board.printTablero();
+        actualPosition = null;
 
-            return false;
+        // Se verifica si hay jaque mate
+        String opposingTeam = turnoActual.equals("B")? "N"  :"B";
+        if (board.jaqueMate(opposingTeam)){
+            return true; // Termina el juego si hay jaque mate
         }
+
+        changeTeam();
+        return false;
+    }
    
     public boolean changePlayer(String positionBox){
         List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
@@ -181,15 +172,7 @@ public class Control implements Serializable {
             return true; // Termina el juego si hay jaque mate
         }
 
-        if (turnoActual.equals("B")){
-            jugadasHistorial += contador + ". " + actualBox + " → " + positionBox + " [" + pieceInfo +"]" + " ".repeat(10);
-            turnoActual = "N";
-        } else {
-            jugadasHistorial += actualBox + " → " + positionBox + " [" + pieceInfo +"] \n";
-            turnoActual = "B";
-            contador++;
-        }
-       
+        changeTeam();
         return false;
     }
    
@@ -197,10 +180,23 @@ public class Control implements Serializable {
        return turnoActual.equals("B")? "blanco":"negro";
    }
    
+   public String getJugadorActual(){
+       return turnoActual.equals("B")? jugador1:jugador2;
+   }
+   
+   public String getJugadorOpuesto(){
+       return turnoActual.equals("B")? jugador2:jugador1;
+   }
+   
+   public void savePlayerNames(String jugador1, String jugador2){
+       this.jugador1 = jugador1;
+       this.jugador2 = jugador2;
+   }
+   
    public void printTablero(){
        board.printTablero();
    }
-     
+        
     // Método para guardar los datos, recibe como parámetro un control.
     public static boolean guardarDatos(Control control, String path){
         try{
@@ -216,6 +212,7 @@ public class Control implements Serializable {
                 return false;
          }
     }
+    
     
     // Método para cargar los datos, retorna un control.
     public static Control cargarDatos(String path) throws FileNotFoundException, IOException, ClassNotFoundException{;

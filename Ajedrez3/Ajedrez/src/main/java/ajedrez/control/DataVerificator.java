@@ -36,5 +36,39 @@ public class DataVerificator {
            default->7;
        };      
    }
+   
+   public static String LetterFromBlack(String valueBox){       
+       String column = valueBox.substring(0, 1);
+       String row = valueBox.substring(1, 2);
+       
+       
+       
+       
+       switch(column){
+           case "A"->column = "H";
+           case "B"->column = "G";
+           case "C"->column = "F";
+           case "D"->column = "E";
+           case "E"->column = "D";
+           case "F"->column = "C";
+           case "G"->column = "B";
+           default->column = "A";
+       }
+       
+       switch(row){
+           case "1"->row = "8";
+           case "2"->row = "7";
+           case "3"->row = "6";
+           case "4"->row = "5";
+           case "5"->row = "4";
+           case "6"->row = "3";
+           case "7"->row = "2";
+           default -> row = "1";
+       }
+       
+       return column + row;
+       
+   }
+   
   
 }

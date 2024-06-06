@@ -26,6 +26,8 @@ public class PromotePawn extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Promoción");
+        setResizable(false);
 
         queenButton.setText("Reina");
         queenButton.addActionListener(new java.awt.event.ActionListener() {
