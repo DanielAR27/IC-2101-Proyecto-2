@@ -110,6 +110,7 @@ public class SaveMatch extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
+    // Open Directory Button Action: Abre un directorio para seleccionar a donde guardar la partida.
     private void openDirectoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDirectoryButtonActionPerformed
         JFileChooser j = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
         j.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -119,24 +120,28 @@ public class SaveMatch extends javax.swing.JDialog {
             directoryPathTextLabel.setText("Directory Path: " + j.getSelectedFile().getAbsolutePath());
         }   
     }//GEN-LAST:event_openDirectoryButtonActionPerformed
-
+    
+    // Save Button Action: Se encarga de guardar la partida actual en el directorio solicitado con el nombre de archivo
+    // solicitado.
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-       String fileName = fileNameTextField.getText();
+       // Se obtiene el nombre del archivo.
+        String fileName = fileNameTextField.getText();
+       // Se verifica que la extensión del archivo sea un binario.
        if (!fileName.endsWith(".bin")){
                 JOptionPane.showMessageDialog(this, "Verifique que el nombre del archivo corresponda a un archivo binario.", 
                         "Advertencia", JOptionPane.ERROR_MESSAGE);
+      // Se  verifica que el usuario haya escodigo un directorio a donde guardar el archivo.
        }else if(directoryPath == null){
                 JOptionPane.showMessageDialog(this, "Verifique haber escodigo una dirección para el directorio.", 
                         "Advertencia", JOptionPane.ERROR_MESSAGE);           
-       }else{
-           //directoryPath = directoryPath.replace("\\", "/");
-           System.out.println(directoryPath);
+       }else{ // Si todas las restricciones anteriores se cumplen entonces se intentará guardar el archivo.
+           // Se intenta guardar el archivo.
            boolean saveCondition = Control.guardarDatos(control, directoryPath+fileName);
-           if (saveCondition){
+           if (saveCondition){ // Si el proceso se da con éxito entonces se notifica al usuario y se cierra la ventana.
                  JOptionPane.showMessageDialog(this, "Se ha guardado el archivo exitosamente.", 
                         "Advertencia", JOptionPane.INFORMATION_MESSAGE);
                   dispose();
-           }else
+           }else // En caso de que suceda algún error, se notifica al usuario para que verifique la ruta del directorio.
                 JOptionPane.showMessageDialog(this, "No se ha podido guardar el archivo, verifique los datos ingresados.", 
                         "Advertencia", JOptionPane.ERROR_MESSAGE);
        }

@@ -1,5 +1,6 @@
 package ajedrez.interfaz;
 
+// Librerias importadas
 import ajedrez.control.Control;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -10,9 +11,12 @@ public class LoadMatch extends javax.swing.JDialog {
     /**
      * Creates new form LoadMatch
      */
+    
+    // Atributos privados
     private String filePath;
     private Ajedrez match;
     
+    // Constructor
     public LoadMatch(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -31,7 +35,7 @@ public class LoadMatch extends javax.swing.JDialog {
 
         jPanel1 = new javax.swing.JPanel();
         filePathTextLabel = new javax.swing.JLabel();
-        openDirectoryButton = new javax.swing.JButton();
+        openFileButton = new javax.swing.JButton();
         loadButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -42,10 +46,10 @@ public class LoadMatch extends javax.swing.JDialog {
 
         filePathTextLabel.setText("File Path:");
 
-        openDirectoryButton.setText("Abrir Archivo");
-        openDirectoryButton.addActionListener(new java.awt.event.ActionListener() {
+        openFileButton.setText("Abrir Archivo");
+        openFileButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                openDirectoryButtonActionPerformed(evt);
+                openFileButtonActionPerformed(evt);
             }
         });
 
@@ -62,7 +66,7 @@ public class LoadMatch extends javax.swing.JDialog {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(24, 24, 24)
-                .addComponent(openDirectoryButton)
+                .addComponent(openFileButton)
                 .addGap(33, 33, 33)
                 .addComponent(loadButton)
                 .addContainerGap(44, Short.MAX_VALUE))
@@ -79,7 +83,7 @@ public class LoadMatch extends javax.swing.JDialog {
                 .addGap(26, 26, 26)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(loadButton)
-                    .addComponent(openDirectoryButton))
+                    .addComponent(openFileButton))
                 .addContainerGap(40, Short.MAX_VALUE))
         );
 
@@ -96,8 +100,9 @@ public class LoadMatch extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void openDirectoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openDirectoryButtonActionPerformed
+    
+    // Open File Button Action: Abre un directorio, selecciona un archivo y lo guarda en la computadora.
+    private void openFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openFileButtonActionPerformed
         JFileChooser j = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
         j.setFileSelectionMode(JFileChooser.FILES_ONLY);
         int decision = j.showSaveDialog(null);
@@ -105,8 +110,9 @@ public class LoadMatch extends javax.swing.JDialog {
             filePath = j.getSelectedFile().getAbsolutePath() + "\\";
             filePathTextLabel.setText("File path: " + j.getSelectedFile().getAbsolutePath());
         }
-    }//GEN-LAST:event_openDirectoryButtonActionPerformed
-
+    }//GEN-LAST:event_openFileButtonActionPerformed
+    
+    // Load Button Action: Carga un control según el archivo solicitado.
     private void loadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadButtonActionPerformed
         try{
                  match.control = Control.cargarDatos(filePath);
@@ -166,6 +172,6 @@ public class LoadMatch extends javax.swing.JDialog {
     private javax.swing.JLabel filePathTextLabel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton loadButton;
-    private javax.swing.JButton openDirectoryButton;
+    private javax.swing.JButton openFileButton;
     // End of variables declaration//GEN-END:variables
 }

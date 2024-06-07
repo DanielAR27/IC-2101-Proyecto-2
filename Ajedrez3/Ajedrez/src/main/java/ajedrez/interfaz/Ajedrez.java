@@ -1,29 +1,25 @@
 package ajedrez.interfaz;
 
+// Librerias importadas
 import ajedrez.control.Control;
 import ajedrez.control.DataVerificator;
-import ajedrez.logica.Tablero;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.border.LineBorder;
-import javax.swing.text.DefaultCaret;
-
 
 public class Ajedrez extends javax.swing.JFrame {
+    // Atributos privados y protegidos
     private boolean gameReady;
     protected Control control;
-
     private Map <String , javax.swing.JButton> botones;
     
+    // Constructor
     public Ajedrez() {
         control = Control.getInstance();
         botones = new TreeMap<>();
@@ -129,8 +125,10 @@ public class Ajedrez extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
+    // Load Game: Método para cargar el juego cuando inicia.
     private void loadGame(){
         javax.swing.JLabel tableroLabel = new javax.swing.JLabel();
+        // Asignar los botones.
         for (int i = 0, y = 35; i <  8; i++, y+= 45){
             for (int j = 0, x = 45; j < 8; j++, x += 45){
                 int rowTop = 8 - i;
@@ -148,18 +146,19 @@ public class Ajedrez extends javax.swing.JFrame {
                 });
                 }
         }
+        // Dejar el juego estático.
         setGameStatic();
+        //Cambiar el ícono del tablero.
         tableroLabel.setIcon(new javax.swing.ImageIcon(System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\tablero.png"));
         tableroLabel.setText("jLabel1");
+        // Agregar el tablero al panel principal.
         Tablas.add(tableroLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 445, 428));
         tableroLabel.getAccessibleContext().setAccessibleName("");        
 
     }
     
     private void updateButtonsIcons(){
-        //boolean status = gameReady;
-        //gameReady = false;
-        control.printTablero();
+        // Por cada uno de los botones, se actualiza la imagen según la pieza del tablero.
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
                 int rowTop = 8 - i;
@@ -168,13 +167,12 @@ public class Ajedrez extends javax.swing.JFrame {
                 button.setIcon(new javax.swing.ImageIcon(control.pathConstructor(i, j)));
             }
         }
-        //gameReady = status;
     }
     
-    
-    
+    // Ping Button: Método para llevar a cabo las acciones entre las piezas.
     private void pingButton(String positionBox, Map<String, javax.swing.JButton> buttons){
-        if (gameReady){
+        if (gameReady){ // Loa botones van a funcionar solo cuando el juego se encuentre listo.
+            // Se obtiene el resultado del movimiento del jugador.
             int jugadorResultado = control.jugadorJuega(positionBox);
 
             switch (jugadorResultado) {
@@ -187,6 +185,8 @@ public class Ajedrez extends javax.swing.JFrame {
                 case 1->{ // CASO #1: ENROQUE
                         // Se obtiene la casilla que fue consultada primeramente.
                         String firstBox = control.getActualPositionBox();
+                        
+                        // Declaración de atributos necesarios.
                         boolean towerAtStart;
                         
                         List<Integer> kingCoords;
@@ -195,8 +195,9 @@ public class Ajedrez extends javax.swing.JFrame {
                         JButton kingButton;
                         JButton rookButton;
                         
-                        JButton oldKingButton = botones.get(firstBox);
-                        JButton oldRookButton = botones.get(positionBox);
+                        // Se obtienen los botones relacionados a las piezas
+                        JButton oldFirstButton = botones.get(firstBox);
+                        JButton oldSecondButton = botones.get(positionBox);
 
                         // Si la columna es "E" entonces es por que la primera casilla corresponda al rey.
                         boolean firstIsKing = firstBox.substring(0, 1).equals("E");
@@ -233,8 +234,8 @@ public class Ajedrez extends javax.swing.JFrame {
                         }                        
                         
                         
-                        oldKingButton.setIcon(null);
-                        oldRookButton.setIcon(null);
+                        oldFirstButton.setIcon(null);
+                        oldSecondButton.setIcon(null);
                        
                         actualPlayerLabel.setText("Jugador actual: " + control.getJugadorActual());
                         actualTeamLabel.setText("Equipo actual: " + control.getEquipoActual());
@@ -245,15 +246,20 @@ public class Ajedrez extends javax.swing.JFrame {
                     // Se obtienen las coordenadas relativas a la casilla que fue seleccionada primeramente.
                     List <Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
                     
+                    // Se abre la ventana para promover al peón.
                     PromotePawn pp = new PromotePawn(this, true);
                     pp.setLocationRelativeTo(this);
                     pp.setVisible(true);
+                    
+                    // Se obtiene el resultado de la selección del usuario.
                     String type = pp.getResult();
+                    
+                    // Si el movimiento termina en Jaque Mate entonces se finaliza el juego.
                     if(control.promotePlay(positionBox, type)){
                          newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
                         firstAccessed.setIcon(null);                       
                         endGame(control.getJugadorActual(), "Jaque Mate");
-                    }else{
+                    }else{ // En caso contrario se continuará el juego.
                         newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
                         firstAccessed.setIcon(null);
                         
@@ -275,19 +281,23 @@ public class Ajedrez extends javax.swing.JFrame {
                     newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
                     // Al viejo se le asigna que no tenga imagen.
                     firstAccessed.setIcon(null); 
+                    
+                    // Si el movimiento termina en Jaque Mate entonces se finaliza el juego.
                     if(control.changePlayer(positionBox)){
                         endGame(control.getJugadorActual(), "Jaque Mate");
-                    }else{
+                    }else{ // En caso contrario, se continua.
                         actualPlayerLabel.setText("Jugador actual: " + control.getJugadorActual());
                         actualTeamLabel.setText("Equipo actual: " + control.getEquipoActual());
                         choosedBoxLabel.setVisible(false);
                     }
                 }
             }
+            // Se actualizan los botones por si quedan cambios pendientes.
             updateButtonsIcons();
         }
     }
- 
+    
+    // Get First Accessed Button: Obtiene el botón relacionado con la primera casilla seleccionada.
     private JButton getFirstAccessedButton(){
         String firstBox = control.getActualPositionBox();
         JButton firstAccessed = new javax.swing.JButton();
@@ -301,12 +311,14 @@ public class Ajedrez extends javax.swing.JFrame {
         return firstAccessed;
     }    
     
+    // Save Button Action: Muestra en pantalla una ventana para guardar la partida actual en un archivo.
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
             SaveMatch sm = new SaveMatch(this, true, control);
             sm.setLocationRelativeTo(this);
             sm.setVisible(true);        
     }//GEN-LAST:event_saveButtonActionPerformed
 
+    // Load Button Action: Muestra en pantalla una ventana para cargar la partida en el tablero.
     private void loadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadButtonActionPerformed
             // Se abre la ventana.
             LoadMatch lm = new LoadMatch(this, true);
@@ -323,22 +335,23 @@ public class Ajedrez extends javax.swing.JFrame {
                 if (!actualBox.equals("")){
                     choosedBoxLabel.setVisible(true);
                     choosedBoxLabel.setText("Casilla seleccionada: " + actualBox);
-                }else{
-                    System.out.println("No info.");
                 }
 
                 updateButtonsIcons();
             }
     }//GEN-LAST:event_loadButtonActionPerformed
 
+    // Start Button Action: Muestra en pantalla una ventnaa para seleccionar los nombres y empezar una partida.
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
         PlayerNames pn = new PlayerNames(this, true);
         pn.setLocationRelativeTo(this);
         pn.setVisible(true);
+        // Si los nombres fueron seleccionados correctamente entonces el juego se hará visible.
         if (control.playersSet())
             setGameViewable();
     }//GEN-LAST:event_startButtonActionPerformed
-
+    
+    // Surrender Button Action: Deja que el jugador del turno actual se rinda dando como ganador al jugador del otro equipo.
     private void surrenderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_surrenderButtonActionPerformed
             String equipoActual = control.getEquipoActual();
             int result = JOptionPane.showConfirmDialog(this, "¿Está seguro el jugador " + control.getJugadorActual()
@@ -349,6 +362,7 @@ public class Ajedrez extends javax.swing.JFrame {
             }
     }//GEN-LAST:event_surrenderButtonActionPerformed
 
+    // Tie Button Action: Pide a ambos jugadores la confirmación para empatar una partida.
     private void tieButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tieButtonActionPerformed
             int actualPlayerResult = JOptionPane.showConfirmDialog(this, "Jugador " + control.getJugadorActual() + " ¿Desea hacer tablas?", 
                     "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -362,24 +376,27 @@ public class Ajedrez extends javax.swing.JFrame {
                 }
             }
     }//GEN-LAST:event_tieButtonActionPerformed
-
+    
+    // End Game: Muestra un mensaje con el ganador y el mótivo de la victoria.
     private void endGame(String winner, String defeatReason){
             JOptionPane.showMessageDialog(this, "El jugador " + winner + " ha ganado la partida.", 
                     defeatReason, JOptionPane.INFORMATION_MESSAGE);
             playAgain();
     }
     
+    // Play Again: Muestra un mensaje para volver a jugar.
     private void playAgain(){
              int result = JOptionPane.showConfirmDialog(this, "¿Desea volver a jugar otra partida?",
                      "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-             if (result == JOptionPane.YES_OPTION){
+             if (result == JOptionPane.YES_OPTION){ // Si el usuario confirma entonces se reinicia el juego.
                  control.reiniciarJuego();
                  setGameStatic();
-             }else{
+             }else{ // Si el usuario no selecciona la opción para confirmar entonces se cierra el juego.
                  dispose();
              }        
     }
         
+    // Set Game Static: Hace que el juego permanezca estático.
     private void setGameStatic(){
         gameReady = false;
         updateButtonsIcons();
@@ -393,6 +410,7 @@ public class Ajedrez extends javax.swing.JFrame {
         saveButton.setVisible(false);
     }
     
+    // Set Game Viewable: Deja que el juego se pueda ver y poder jugar.
     private void setGameViewable(){
         gameReady = true;
         startButton.setVisible(false);

@@ -7,10 +7,12 @@ public class PromotePawn extends javax.swing.JDialog {
     /**
      * Creates new form PromotePawn
      */
+    
+    // Constructor
     public PromotePawn(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE); // Evita cerrar la ventana.
     }
 
     /**
@@ -98,26 +100,31 @@ public class PromotePawn extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // Queen Button Action: Guarda el resultado como reina y cierra la ventana.
     private void queenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_queenButtonActionPerformed
         promoteResult = "Q";
         dispose();
     }//GEN-LAST:event_queenButtonActionPerformed
-
+    
+    // Rook Button Action: Guarda el resultado como torre y cierra la ventana.
     private void rookButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rookButtonActionPerformed
         promoteResult = "T";
         dispose();
     }//GEN-LAST:event_rookButtonActionPerformed
-
+    
+    // Horse Button Action: Guarda el resultado como caballo y cierra la ventana.
     private void horseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_horseButtonActionPerformed
         promoteResult = "C";
         dispose();
     }//GEN-LAST:event_horseButtonActionPerformed
-
+    
+    // Alfil Button Action: Guarda el resultado como torre y cierra la ventana.
     private void bishopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bishopButtonActionPerformed
         promoteResult = "A";
         dispose();
     }//GEN-LAST:event_bishopButtonActionPerformed
-
+    
+    // Get Result: Obtiene el resultado de la promoción del peón.
    public String getResult(){
        return promoteResult;
    }

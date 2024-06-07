@@ -3,10 +3,13 @@ package ajedrez.interfaz;
 import javax.swing.JOptionPane;
 
 public class PlayerNames extends javax.swing.JDialog {
+    // Atributos privados
     private Ajedrez match;
     /**
      * Creates new form playerNames
      */
+    
+    // Constructor
     public PlayerNames(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -98,19 +101,25 @@ public class PlayerNames extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    // Accept Button Action: Confirma los nombres para los usuarios.
     private void acceptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptButtonActionPerformed
+            // Se le pide al usuario por su confirmación.
             int result = JOptionPane.showConfirmDialog(this, "¿Está seguro de elegir estos nombres para los jugadores?",
                     "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             
+            // En caso de que la respuesta sea afirmativa entonces se revisaran los textos ingrsados.
             if (result == JOptionPane.YES_OPTION){
+                // Se verifica que los nombres no sean espacios vacíos.
                 if ("".equals(firstPlayer.getText()) || "".equals(secondPlayer.getText()))
                     JOptionPane.showMessageDialog(this, "Verifique que los nombres de usuarios no sean espacios vacíos.", 
                             "Notificación", JOptionPane.INFORMATION_MESSAGE);
+                // Se verifica que los textos no tengan una longitud mayor que veinte caracteres.
                 else if(firstPlayer.getText().length() > 20 || secondPlayer.getText().length() > 20)
                     JOptionPane.showMessageDialog(this, "Verifique que los nombres de usuarios no excedan los 20 caracteres.", 
                             "Notificación", JOptionPane.INFORMATION_MESSAGE);                    
-                else{
+                else{ // Si las restricciones no aplican entonces se pueden guardar los nombres con éxito.
+                    // Se gurdan los nombres y se cierra la ventana.
                     match.control.savePlayerNames(firstPlayer.getText(),  secondPlayer.getText());
                     dispose();
                 }

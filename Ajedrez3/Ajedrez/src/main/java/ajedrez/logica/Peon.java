@@ -1,14 +1,17 @@
 package ajedrez.logica;
 
+// Librerias importadas
 import java.util.ArrayList;
 import java.util.List;
 
 public class Peon extends Piece {
+    // Constructor
     public Peon(Team equipo, Position pos) {
         super(equipo, pos);
     }
 
     @Override
+    // Get Moves: Recibe un tablero y obtiene la lista de posiciones donde puede moverse un peón.
     public List<Position> getMoves(Tablero t) {
         Piece actualPiece;
         Position nextPosition;
@@ -16,7 +19,8 @@ public class Peon extends Piece {
         List<Position> posiciones = new ArrayList<>();
         int doubleMove = equipo.toString().equals("B") ? -2 : 2;
         int startRow = equipo.toString().equals("B") ? 6 : 1;
-
+        
+        // Movimiento de inicio.
         nextPosition = new Position(actualPos.getRow() + doubleMove, actualPos.getColumn());
         if (t.validPosition(nextPosition)) {
             actualPiece = t.getPiece(nextPosition);
@@ -61,6 +65,7 @@ public class Peon extends Piece {
     }
 
     @Override
+    // Get Path: Retorna la dirección de imagen de la pieza.
     public String getPath() {
         if (equipo.toString().equals("B"))
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\peon_blanco.png";
@@ -69,11 +74,13 @@ public class Peon extends Piece {
     }
 
     @Override
+    // Get Type: Retorna el tipo de la pieza.
     public String getType() {
         return "P";
     }
 
     @Override
+    // To String: Método para obtener el tipo y el equipo de la pieza.
     public String toString() {
         if (equipo.name().equals("BLANCO"))
             return "PB";

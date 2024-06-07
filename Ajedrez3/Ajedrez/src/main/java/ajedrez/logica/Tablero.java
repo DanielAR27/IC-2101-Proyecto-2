@@ -1,15 +1,18 @@
 package ajedrez.logica;
 
+// Librerias importadas
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Tablero implements Serializable {
+    // Atributos privados
     private List<ArrayList<Piece>> tablero;
     private List<Position> whitePositions;
     private List<Position> blackPositions;
     private Position peonCapturableAlPaso; 
 
+    // Constructor
     public Tablero() {
         whitePositions = new ArrayList<>();
         blackPositions = new ArrayList<>();
@@ -17,6 +20,7 @@ public class Tablero implements Serializable {
         peonCapturableAlPaso = null; 
     }
 
+   // Set Tablero: Método encargado de inicializar el tablero con todas las piezas en su lugar.
     private List<ArrayList<Piece>> setTablero() {
         List<ArrayList<Piece>> board = new ArrayList<>();
 
@@ -28,49 +32,52 @@ public class Tablero implements Serializable {
             for (int j = 0; j < 8; j++) {
                 Position piecePos = new Position(i, j);
                 if (i < 2) {
-                    if (i == 0 && (j == 0 || j == 7))
+                    if (i == 0 && (j == 0 || j == 7)) // Creación de torres del equipo negro.
                         board.get(i).add(PieceFactory.createPiece("T", "N", piecePos));
-                    else if (i == 0 && (j == 1 || j == 6))
+                    else if (i == 0 && (j == 1 || j == 6)) // Creación de caballos del equipo negro.
                         board.get(i).add(PieceFactory.createPiece("C", "N", piecePos));
-                    else if (i == 0 && (j == 2 || j == 5))
+                    else if (i == 0 && (j == 2 || j == 5)) // Creación de alfiles del equipo negro.
                         board.get(i).add(PieceFactory.createPiece("A", "N", piecePos));
-                    else if (i == 0 && j == 3)
+                    else if (i == 0 && j == 3) // Creación de reinas del equipo negro.
                         board.get(i).add(PieceFactory.createPiece("Q", "N", piecePos));
-                    else if (i == 0 && j == 4)
+                    else if (i == 0 && j == 4) // Creación de reyes del equipo negro.
                         board.get(i).add(PieceFactory.createPiece("K", "N", piecePos));
-                    else
+                    else // Creación de peones del equipo negro.
                         board.get(i).add(PieceFactory.createPiece("P", "N", piecePos));
-                    blackPositions.add(piecePos);
+                    blackPositions.add(piecePos); // Agregar posición a la lista de posiciones del equipo negro.
                 } else if (i > 5) {
-                    if (i == 6)
+                    if (i == 6) // Creación de peones del equipo blanco.
                         board.get(i).add(PieceFactory.createPiece("P", "B", piecePos));
-                    else if (i == 7 && (j == 0 || j == 7))
+                    else if (i == 7 && (j == 0 || j == 7)) // Creación de torres del equipo blanco.
                         board.get(i).add(PieceFactory.createPiece("T", "B", piecePos));
-                    else if (i == 7 && (j == 1 || j == 6))
+                    else if (i == 7 && (j == 1 || j == 6)) // Creación de caballos del equipo blanco.
                         board.get(i).add(PieceFactory.createPiece("C", "B", piecePos));
-                    else if (i == 7 && (j == 2 || j == 5))
+                    else if (i == 7 && (j == 2 || j == 5)) // Creación de alfiles del equipo blanco.
                         board.get(i).add(PieceFactory.createPiece("A", "B", piecePos));
-                    else if (i == 7 && j == 3)
+                    else if (i == 7 && j == 3) // Creación de reinas del equipo blanco.
                         board.get(i).add(PieceFactory.createPiece("Q", "B", piecePos));
-                    else
+                    else // Creación de reyes del equipo blanco.
                         board.get(i).add(PieceFactory.createPiece("K", "B", piecePos));
-                    whitePositions.add(piecePos);
+                    whitePositions.add(piecePos); // Agregar posición a la lista de posiciones del equipo blanco.
                 } else {
                     board.get(i).add(null);
                 }
             }
         }
-        return board;
+        return board; // Se retorna el tablero una vez se hayan inicializado las piezas.
     }
-
+    
+    // Get Piece: Método para obtener la pieza en una posición, retorna null si no hay pieza en la posición solicitada.
     public Piece getPiece(Position p) {
         return tablero.get(p.getRow()).get(p.getColumn());
     }
-
+    
+    // Set Piece: Método para establecer en una posición una pieza.
     public void setPiece(Position p, Piece piece) {
         tablero.get(p.getRow()).set(p.getColumn(), piece);
     }
 
+    // Replace Position: Reemplaza en la lista de posiciones la posición anterior por la nueva posición según el equipo.
     public void replacePosition(String team, Position beforePos, Position afterPos) {
         if ("B".equals(team)) {
             whitePositions.remove(beforePos);
@@ -81,31 +88,41 @@ public class Tablero implements Serializable {
         }
     }
     
+    // Get Peon Capturable Al Paso: Retorna si un peón es capturable al paso.
     public Position getPeonCapturableAlPaso() {
         return peonCapturableAlPaso;
     }
     
-
+    // Move Piece: Método para mover una pieza desde una posición a otra.
     public boolean movePiece(Position actualPos, Position nextPos) {
+        // Se verifica que la posición sea válida.
         if (!validPosition(actualPos) || !validPosition(nextPos))
             throw new IllegalArgumentException("Position is not valid.");
 
+        // Se obtiene la pieza de la posición actual.
         Piece piece = getPiece(actualPos);
+        // Si no hay pieza en la posición solicitada entonces se lanza un error.
         if (piece == null)
             throw new IllegalArgumentException("No piece at actual position.");
-
+        
+        // Se obtiene la pieza de la posición siguiente.
         Piece nextPiece = getPiece(nextPos);
+        // Se reemplaza la posición de la pieza actual con la de la posición siguiente.
         replacePosition(piece.getEquipo(), actualPos, nextPos);
-
+        
+        // Se le asigna la posición siguiente como posición actual de la pieza.
         piece.setPosition(nextPos);
+        // Si la pieza obtenida no era null eso quiere decir que hay que eliminarla de la lista
+        // de posiciones disponibles para el equipo contrario.
         if (nextPiece != null) {
             if ("B".equals(piece.getEquipo()))
                 blackPositions.remove(nextPos);
             else
                 whitePositions.remove(nextPos);
         }
-
+        // Se asigna null en la posición actual.
         setPiece(actualPos, null);
+        // Se asigna la pieza en la posición siguiente.
         setPiece(nextPos, piece);
 
         // Manejo de captura al paso
@@ -149,50 +166,61 @@ public class Tablero implements Serializable {
         return nextPiece instanceof Rey;
     }
 
-    
+    // Valid Castling: Método para revisar si un enroque es válido.
     public boolean validCastling(Piece king, Piece rook) {
         // Verifica que las piezas no se hayan movido anteriormente.
         if (king.moved || rook.moved)
             return false;
-
+        
+        // Se obtiene la fila.
         int row = king.actualPos.getRow();
-
-        int start = king.actualPos.getColumn();
-        int stop = rook.actualPos.getColumn();
-        int iterator = stop == 0 ? -1 : 1;
+        
+        int start = king.actualPos.getColumn(); // Se obtiene el inicio de la iteración.
+        int stop = rook.actualPos.getColumn(); // Se obtiene el final de la iterción.
+        int iterator = stop == 0 ? -1 : 1; // Se obtiene el iterador según la columna.
+        
+        // Se itera por cada uno de los campos entre el rey y la torre.
         for (int i = start + iterator; i < stop; i += iterator) {
+            // Se recupera la posición iterada.
             Position p = new Position(row, i);
+            // Si hay una pieza entre las casillas que se encuentran entre el rey y la torre entonces se
+            // retorna falso para indicar que no se puede hacer el enroque.
             if (getPiece(p) != null)
                 return false;
         }
-
+        
+        // Se obtiene la columna para el rey y la torre según el iterador.
         int kingColumn = iterator == -1 ? start - 2 : start + 2;
         int rookColumn = iterator == -1 ? stop + 3 : stop - 2;
-
+        
+        // Se asignan las nuevas posiciones de las piezas después del enroque.
         Position nextKingPos = new Position(row, kingColumn);
         Position nextRookPos = new Position(row, rookColumn);
-
+        
+        // Se simula el tablero con los cambios realizados para ambas piezas.
         Tablero simulatedBoard = simulateMove(king.actualPos, nextKingPos);
         simulatedBoard = simulatedBoard.simulateMove(rook.actualPos, nextRookPos);
 
-        System.out.println("Resultado del enroque: " + !simulatedBoard.jaque(king.getEquipo()));
-        // Retorna True si no hay jaque y False si hay jaque.
+        // En caso de que el enroque no genere jaque entonces se retorna verdadero, si genera jaque
+        // retorna falso para indicar que no se puede hacer el enroque.
         return !simulatedBoard.jaque(king.getEquipo());
     }
 
+    // Castle Move: Método para mover un rey y una torre en enroque. 
     public void castleMove(Position kingPos, Position rookPos, boolean towerAtStart) {
+        // Se declaran las posiciones para la jugada de enroque a realizar.
         Position nextKingPos;
         Position nextRookPos;
 
-        System.out.println("castleMove");
-
+        // Se obtienen las piezas en las posiciones solicitadas.
         Piece king = getPiece(kingPos);
         Piece rook = getPiece(rookPos);
-
+        
+        // Si la torre se encuentra al inicio de la fila se hace el cambio respectivo.
         if (towerAtStart) {
             nextKingPos = new Position(kingPos.getRow(), kingPos.getColumn() - 2);
             nextRookPos = new Position(rookPos.getRow(), rookPos.getColumn() + 3);
-        } else {
+        } else { // En caso contrario, se hará lo mismo cuando la torre este al final de la fila.
             nextKingPos = new Position(kingPos.getRow(), kingPos.getColumn() + 2);
             nextRookPos = new Position(rookPos.getRow(), rookPos.getColumn() - 2);
         }
@@ -206,43 +234,61 @@ public class Tablero implements Serializable {
         replacePosition(rook.getEquipo(), rookPos, nextRookPos);
         rook.setPosition(nextRookPos);
         rook.setMoved();
-
+        
+        // Se asigna null en la posición actual del rey.
         setPiece(kingPos, null);
+        // Se asigna la pieza del rey en la posición siguiente.
         setPiece(nextKingPos, king);
 
+        // Se asigna null en la posición actual de la torre. 
         setPiece(rookPos, null);
+        // Se asigna la pieza de la torre en la posición siguiente.
         setPiece(nextRookPos, rook);
     }
-
+    
+    // Promotion Move: Se encarga de promover un peón y moverlo a la casilla selecccionada.
     public void promotionMove(Position actualPos, Position nextPos, String team, String type) {
         // Se crea la pieza con su tipo, su equipo y se le asigna la posición siguiente como posición actual.
         Piece promotedPiece = PieceFactory.createPiece(type, team, nextPos);
 
         // Se asigna en la posición de la pieza actual nulo.
         setPiece(actualPos, null);
-
+        
+        // Si el equipo es blanco entonces se reemplaza la posición actual en la lista de posiciones ocupadas
+        // por el equipo blanco.
         if (team.equals("B")) {
-            // Se reemplaza la posición actual en la lista de posiciones ocupadas por el equipo blanco.
             replacePosition("B", actualPos, nextPos);
-        } else {
+        // En caso de que el equipo sea negro, se hará lo mismo solo que en la lista de posiciones ocupadas
+        // por el equipo negro.
+        } else { 
             replacePosition("N", actualPos, nextPos);
         }
-
+        
+        // Se asigna en la posición siguiente la pieza promovida.
         setPiece(nextPos, promotedPiece);
     }
 
+    // Valid Move: Método para verificar si un movimiento es válido.
     public boolean validMove(Position actualPos, Position nextPos) {
+        // Si la posición actual es null entonces se retorna falso para indicar que el movimiento no es válido.
         if (actualPos == null) {
             return false;
-        } else {
+        } else { // En caso contrario, se procederá a revisar si el movimiento es válido.
+            // Se obtiene la pieza en la posición actual solicitada.
             Piece piece = getPiece(actualPos);
+            // Si la pieza corresponde a null se retorna falso para indicar que el movimiento no es válido.
             if (piece == null) {
                 return false;
-            } else {
+            } else { // En caso contrario, se revisará en la lista de movimientos relacionadas a la pieza.
+                // Se obtiene la lista de posiciones posibles para la pieza.
                 List<Position> positions = piece.getMoves(this);
+                // Si la posición siguiente está contenido dentro de la lista de posibles movimientos de la pieza
+                // entonces se verificará otro paso más para verificar que el movimiento sea válido.
                 if (positions.contains(nextPos)) {
-                    System.out.println("Contiene la posición.");
+                    // Se obtiene el tablero simulando el movimiento realizado.
                     Tablero simulatedBoard = simulateMove(actualPos, nextPos);
+                    // En caso de que el movimiento sea realizado cuando el rey del equipo actual
+                    // se encuentra en jaque entonces se retorna verdadero para indicar que el movimiento es válido.
                     if (!simulatedBoard.jaque(piece.getEquipo())) {
                         return true;
                     }
@@ -251,51 +297,73 @@ public class Tablero implements Serializable {
             }
         }
     }
-
+    
+    // Valid Position: Método para verificar si una posición cumple con los estandares dentro del tablero.
     public boolean validPosition(Position p) {
         return p.getRow() >= 0 && p.getRow() <= 7 && p.getColumn() >= 0 && p.getColumn() <= 7;
     }
 
+    // Same Team: Verifica si una pieza en una posición es del mismo equipo que el equipo solicitado.
     public boolean sameTeam(Position p, String team) {
+        // Se obtiene la pieza en la posición.
         Piece piece = getPiece(p);
+        // Si la pieza actual es null entonces se retorna falso.
         if (piece == null) {
             return false;
         }
+        // En caso contrario, se retornará el resultado de si el equipo de la pieza concuerda con el equipo solicitado.
         return piece.getEquipo().equals(team);
     }
 
+    // Print Tablero: Método para imprimir el tablero en terminal.
     public void printTablero() {
         for (int i = 0; i < 8; i++) {
             System.out.println(tablero.get(i));
         }
         System.out.println("");
     }
-
+    
+    // Jaque: Verifica si hay jaque para un equipo solicitado.
     public boolean jaque(String team) {
+        // Se declara la posición del rey.
         Position kingPosition = null;
+        // Se obtiene la lista de posiciones enemigas.
         List<Position> enemyPositions = team.equals("B") ? blackPositions : whitePositions;
 
+       // Se itera por cada una de las posiciones del mismo equipo hasta obtener la pieza del rey.
         for (Position pos : team.equals("B") ? whitePositions : blackPositions) {
+            // Se obtiene la peiza del equipo solicitado.
             Piece piece = getPiece(pos);
+            // Si la pieza es una instancia de Rey entonces se guarda la posición encontrada
+            // en la posición del rey y se rompe el ciclo.
             if (piece instanceof Rey) {
                 kingPosition = pos;
                 break;
             }
         }
-
+        
+        // Si no se puede encontrar al rey entonces se generará un error.
         if (kingPosition == null) {
             throw new IllegalStateException("No king found for team " + team);
         }
-
+        
+        // Se itera por cada una de las posiciones enemigas para verificar si dentro de las jugadas
+        // de los enemigos está la del rey.
         for (Position pos : enemyPositions) {
+            // Se obtiene la pieza del enemigo.
             Piece enemyPiece = getPiece(pos);
+            // Siempre que la pieza enemiga no represente null entonces se van a verificar sus movimientos.
             if (enemyPiece != null) {
+                // Se obtiene la lista de movimientos para la pieza enemiga.
                 List<Position> enemyMoves = enemyPiece.getMoves(this);
+                // Si dentro de las posiciones enemigas está la del rey del equipo solicitado entonces
+                // se retorna verdadero indicando que hay un jaque.
                 if (enemyMoves.contains(kingPosition)) {
                     return true;
                 }
             }
         }
+        // En caso contrario, se retorna false para indicar que no existe jaque.
         return false;
     }
 
@@ -320,13 +388,17 @@ public class Tablero implements Serializable {
         }
         return true;
     }
-
+    
+    // Simultate move: Simula un movimiento en un tablero.
     private Tablero simulateMove(Position actualPos, Position nextPos) {
+        // Clona el tablero.
         Tablero simulatedBoard = cloneBoard();
-
+        
+        // Obtiene las piezas en las posiciones solicitadas.
         Piece piece = simulatedBoard.getPiece(actualPos);
         Piece nextPiece = simulatedBoard.getPiece(nextPos);
-
+        
+        // Borra de la lista de posiciones según el equipo.
         if ("B".equals(piece.getEquipo())) {
             simulatedBoard.whitePositions.remove(actualPos);
             simulatedBoard.whitePositions.add(nextPos);
@@ -334,11 +406,16 @@ public class Tablero implements Serializable {
             simulatedBoard.blackPositions.remove(actualPos);
             simulatedBoard.blackPositions.add(nextPos);
         }
-
+        
+        // Asigna a la posición actual de la pieza la posición siguiente.
         piece.setPosition(nextPos);
+        // Se asigna null en la posición actual.
         simulatedBoard.tablero.get(actualPos.getRow()).set(actualPos.getColumn(), null);
+        // Se asigna la pieza en la posición siguiente.
         simulatedBoard.tablero.get(nextPos.getRow()).set(nextPos.getColumn(), piece);
 
+        // Si la pieza obtenida no era null eso quiere decir que hay que eliminarla de la lista
+        // de posiciones disponibles para el equipo contrario.
         if (nextPiece != null) {
             if ("B".equals(piece.getEquipo())) {
                 simulatedBoard.blackPositions.remove(nextPos);
@@ -361,10 +438,11 @@ public class Tablero implements Serializable {
             }
         }
 
-        return simulatedBoard;
+        return simulatedBoard; // Se retorna el tablero con la jugada realizada.
     }
 
-
+    
+    // Clone Board: Clona un tablero para simular jugadas.
     private Tablero cloneBoard() {
         Tablero newBoard = new Tablero();
 

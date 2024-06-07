@@ -1,5 +1,6 @@
 package ajedrez.control;
 
+// Librerias importadas
 import ajedrez.logica.Peon;
 import ajedrez.logica.Piece;
 import ajedrez.logica.Position;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Control implements Serializable {
+    // Atributos privados
     private Position actualPosition;
     private String jugador1;
     private String jugador2;
@@ -31,15 +33,18 @@ public class Control implements Serializable {
         turnoActual = "B";
     }
     
+    // Get Instance: Obtiene una nueva instancia de control.
     public static Control getInstance(){
         instance = new Control();
         return instance;
     }
     
+    // Get Tablero: Obtiene el tablero de juego.
     public Tablero getTablero(){
         return board;
     }
     
+    // Change Team: Cambia al equipo contrario para el siguiente turno.
    private void changeTeam(){
        if (turnoActual.equals("B")){
            turnoActual = "N";
@@ -48,6 +53,7 @@ public class Control implements Serializable {
        }
    }    
     
+   // Reiniciar Juego: Reinicia el tablero y los atributos privados de la clase.
     public void reiniciarJuego(){
         board = new Tablero();
         jugador1 = null;
@@ -56,13 +62,17 @@ public class Control implements Serializable {
         turnoActual = "B";
     }
         
+   // Obtener Position: Dada una tupla de coordenadas verifica que la posición sea válida y en caso de serlo retorna un objeto
+    // de tipo Position
     public Position obtenerPosition(int x, int y){
         Position pos = new Position(x, y);
         if (!board.validPosition(pos))
             throw new IllegalArgumentException("Error: Position doesn't exist in board.");
         return pos;
         }
-    
+   
+    // Jugador Juega: Recibe la casilla del próximo movimiento, verifica el tipo de movimiento o si la jugada no es válida
+    // para el jugador actual.
    public int jugadorJuega(String positionBox){
        List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
        
@@ -115,7 +125,6 @@ public class Control implements Serializable {
        return positionBox;
    }
    
-   
    // Path Constructor: Recibe las coordenadas de una posición y determina cual es su dirección de imagen.
    public String pathConstructor(int x, int y){
        Piece piece = board.getPiece(obtenerPosition(x, y));
@@ -125,6 +134,8 @@ public class Control implements Serializable {
            return piece.getPath();
     }
    
+   // Castle Play: Efectua un movimiento de enroque, recibe como parámetro la casilla del rey, la casilla de la torre
+   // y si la torre se encuentra al inicio o al final de la fila.
     public void castlePlay(String kingBox, String rookBox, boolean towerAtStart){
            List<Integer> kingCoords = (ArrayList) DataVerificator.boxPositionValues(kingBox);
            List<Integer> rookCoords = (ArrayList) DataVerificator.boxPositionValues(rookBox);
@@ -138,6 +149,8 @@ public class Control implements Serializable {
            changeTeam();
     }
     
+    // Promote Play: Efectua un movimiento de promoción, recibe como parámetro la siguiente casilla
+    // y el tipo de la pieza a la cual será promovida, retorna verdadero si la jugada resulta en Jaque Mate.
     public boolean promotePlay(String positionBox, String type){
         List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
 
@@ -158,6 +171,8 @@ public class Control implements Serializable {
         return false;
     }
    
+    // Promote Play: Efectua un movimiento normal, recibe como parámetro la siguiente casilla,
+    // retorna verdadero si la jugada resulta en Jaque Mate.
     public boolean changePlayer(String positionBox){
         List<Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
         
@@ -179,23 +194,28 @@ public class Control implements Serializable {
         return false;
     }
    
+    // Get Equipo Actual: Retorna el equipo actual.
    public String getEquipoActual(){
        return turnoActual.equals("B")? "blanco":"negro";
    }
    
+   // Get Jugador Actual: Retorna el jugador actual según el equipo al cual le pertenezca el turno.
    public String getJugadorActual(){
        return turnoActual.equals("B")? jugador1:jugador2;
    }
    
+   // Get Jugador Opuesto: Retorna el jugador opuesto según el equipo actual al cual le perteneza el turno.
    public String getJugadorOpuesto(){
        return turnoActual.equals("B")? jugador2:jugador1;
    }
    
+   // Save Player Names: Recibe como parámetro el nombre de ambos jugadores y los guarda.
    public void savePlayerNames(String jugador1, String jugador2){
        this.jugador1 = jugador1;
        this.jugador2 = jugador2;
    }
    
+   // Player Set: Retorna verdadero en caso de que los nombres de ambos jugadores se encuentren disponibles.
    public boolean playersSet(){
        return jugador1 != null && jugador2 != null;
    }
@@ -204,7 +224,8 @@ public class Control implements Serializable {
        board.printTablero();
    }
         
-    // Método para guardar los datos, recibe como parámetro un control.
+    // Guardar Datos: Método para guardar los datos de una partida, recibe como parámetro un control y la dirección
+   // donde se guarda la información.
     public static boolean guardarDatos(Control control, String path){
         try{
             FileOutputStream file = new FileOutputStream(path);
@@ -220,8 +241,7 @@ public class Control implements Serializable {
          }
     }
     
-    
-    // Método para cargar los datos, retorna un control.
+    // Cargar Datos: Método para cargar los datos, recibe una dirección donde se carga la información y retorna un control.
     public static Control cargarDatos(String path) throws FileNotFoundException, IOException, ClassNotFoundException{;
         Control control;
         FileInputStream file = new FileInputStream(path);

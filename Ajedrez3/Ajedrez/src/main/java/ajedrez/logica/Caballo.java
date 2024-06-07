@@ -1,18 +1,22 @@
 package ajedrez.logica;
 
+// Librerias importadas
 import java.util.ArrayList;
 import java.util.List;
 
 public class Caballo extends Piece{
+    // Constructor
     public Caballo(Team equipo, Position pos){
         super(equipo, pos);
     }
     
     @Override
+    // Get Moves: Recibe un tablero y obtiene la lista de posiciones donde puede moverse un caballo.
     public List<Position> getMoves(Tablero t){
         List<Position> posiciones = new ArrayList<>();
         Position nextPosition;
         
+        // Movimiento en "L".
         for(int r= actualPos.getRow() - 2; r <= actualPos.getRow() + 2; r++){
             if (r != actualPos.getRow()){
                 int moveValue = r == actualPos.getRow() -2 || r == actualPos.getRow() +2? 1:2;
@@ -35,6 +39,7 @@ public class Caballo extends Piece{
     }
 
     @Override
+    // Get Path: Retorna la dirección de imagen de la pieza.
     public String getPath(){
         if (equipo.toString().equals("B"))
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\caballo_blanco.png";
@@ -43,11 +48,13 @@ public class Caballo extends Piece{
     }
 
     @Override
+    // Get Type: Retorna el tipo de la pieza.
     public String getType(){
         return "C";
     }
     
    @Override
+   // To String: Método para obtener el tipo y el equipo de la pieza.
    public String toString(){
        if (equipo.name().equals("BLANCO"))
            return "CB";

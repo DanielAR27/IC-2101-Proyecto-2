@@ -1,13 +1,16 @@
 package ajedrez.logica;
 
+// Librerias importadas
 import java.util.ArrayList;
 import java.util.List;
 
 public class Reina extends Piece {
+    // Constructor
     public Reina(Team equipo, Position pos){
         super(equipo, pos);
     }
     @Override
+    // Get Moves: Recibe un tablero y obtiene la lista de posiciones donde puede moverse una reina.
     public List<Position> getMoves(Tablero t){
         List<Position> posiciones = new ArrayList<>();
         Position nextPosition;
@@ -30,7 +33,6 @@ public class Reina extends Piece {
                     }
             }
             
-            //System.out.println("-".repeat(20));
             // Diagonal derecha:
             for (int r = actualPos.getRow() - 1, c = actualPos.getColumn() + 1; c < 8; r--, c++){
                     nextPosition = new Position(r , c);
@@ -49,7 +51,6 @@ public class Reina extends Piece {
                     }
             }
             
-           // System.out.println("-".repeat(20));
             // Diagonal izquierda inversa.
             for (int r = actualPos.getRow() + 1, c = actualPos.getColumn() - 1; r < 8; r++, c--){
                     nextPosition = new Position(r , c);
@@ -68,7 +69,6 @@ public class Reina extends Piece {
                     }
             }
             
-            //System.out.println("-".repeat(20));
              // Diagonal derecha inversa.
             for (int r = actualPos.getRow() + 1, c = actualPos.getColumn() + 1; c < 8; r++, c++){
                     nextPosition = new Position(r , c);
@@ -160,6 +160,7 @@ public class Reina extends Piece {
     }
 
     @Override
+    // Get Path: Retorna la dirección de imagen de la pieza.
     public String getPath(){
         if (equipo.toString().equals("B"))
             return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\reina_blanca.png";
@@ -168,11 +169,13 @@ public class Reina extends Piece {
     }
  
     @Override
+    // Get Type: Retorna el tipo de la pieza.
     public String getType(){
         return "Q";
     }    
     
    @Override
+   // To String: Método para obtener el tipo y el equipo de la pieza.
    public String toString(){
        if (equipo.name().equals("BLANCO"))
            return "QB";
