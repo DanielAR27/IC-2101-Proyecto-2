@@ -29,9 +29,7 @@ public class Caballo extends Piece{
                         else if(validCapture(t, nextPosition)){ // Posición es pieza enemiga.
                             posiciones.add(nextPosition);
                         }
-                    }else{ // Posición no válida.
-                        break;
-                    }                         
+                    }                       
                 }
             }
         }

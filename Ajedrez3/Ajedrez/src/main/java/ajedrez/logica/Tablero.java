@@ -151,6 +151,8 @@ public class Tablero implements Serializable {
                         } else {
                             whitePositions.remove(posicionPeonCapturado);
                         }
+                        // Se agrega a la lista de piezas capturadas.
+                        capturadas.add(peonCapturado.toString());
                     }
                 }
                 peonCapturableAlPaso = null;
@@ -158,7 +160,7 @@ public class Tablero implements Serializable {
         } else {
             peonCapturableAlPaso = null;
         }
-
+        
         // Verifica si el movimiento deja al rey en jaque
         if (jaque(piece.getEquipo())) {
             // Revertir el movimiento
