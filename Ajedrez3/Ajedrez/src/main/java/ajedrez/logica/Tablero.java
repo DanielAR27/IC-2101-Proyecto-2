@@ -10,12 +10,14 @@ public class Tablero implements Serializable {
     private List<ArrayList<Piece>> tablero;
     private List<Position> whitePositions;
     private List<Position> blackPositions;
+    private List<String> capturadas;
     private Position peonCapturableAlPaso; 
 
     // Constructor
     public Tablero() {
         whitePositions = new ArrayList<>();
         blackPositions = new ArrayList<>();
+        capturadas = new ArrayList<>();
         tablero = setTablero();
         peonCapturableAlPaso = null; 
     }
@@ -65,6 +67,11 @@ public class Tablero implements Serializable {
             }
         }
         return board; // Se retorna el tablero una vez se hayan inicializado las piezas.
+    }
+    
+    // Get Capturadas: Retorna las piezas capturadas en el tablero.
+    public List<String> getCapturadas(){
+        return capturadas;
     }
     
     // Get Piece: Método para obtener la pieza en una posición, retorna null si no hay pieza en la posición solicitada.
@@ -119,6 +126,8 @@ public class Tablero implements Serializable {
                 blackPositions.remove(nextPos);
             else
                 whitePositions.remove(nextPos);
+            // Se agrega a la lista de piezas capturadas.
+            capturadas.add(nextPiece.toString());
         }
         // Se asigna null en la posición actual.
         setPiece(actualPos, null);
@@ -172,6 +181,11 @@ public class Tablero implements Serializable {
         if (king.moved || rook.moved)
             return false;
         
+        // Verifica si actualmente el rey se encuentra en posición de jaque.
+        if (jaque(king.getEquipo())){
+            return false;
+        }
+
         // Se obtiene la fila.
         int row = king.actualPos.getRow();
         
@@ -250,23 +264,37 @@ public class Tablero implements Serializable {
     public void promotionMove(Position actualPos, Position nextPos, String team, String type) {
         // Se crea la pieza con su tipo, su equipo y se le asigna la posición siguiente como posición actual.
         Piece promotedPiece = PieceFactory.createPiece(type, team, nextPos);
-
+        Piece nextPiece = getPiece(nextPos);
+            
         // Se asigna en la posición de la pieza actual nulo.
         setPiece(actualPos, null);
         
         // Si el equipo es blanco entonces se reemplaza la posición actual en la lista de posiciones ocupadas
         // por el equipo blanco.
         if (team.equals("B")) {
-            replacePosition("B", actualPos, nextPos);
-        // En caso de que el equipo sea negro, se hará lo mismo solo que en la lista de posiciones ocupadas
-        // por el equipo negro.
-        } else { 
-            replacePosition("N", actualPos, nextPos);
+                replacePosition("B", actualPos, nextPos);
+            // En caso de que el equipo sea negro, se hará lo mismo solo que en la lista de posiciones ocupadas
+            // por el equipo negro.
+            } else { 
+                replacePosition("N", actualPos, nextPos);
+            }
+
+            // Se asigna en la posición siguiente la pieza promovida.
+            setPiece(nextPos, promotedPiece);
+
+        // Si la pieza obtenida no era null eso quiere decir que hay que eliminarla de la lista
+        // de posiciones disponibles para el equipo contrario.
+        if (nextPiece != null) {
+            if ("B".equals(promotedPiece.getEquipo())){
+                blackPositions.remove(nextPos);
+            }else{
+                whitePositions.remove(nextPos);
+            }
+            // Se agrega a la lista de piezas capturadas.
+            capturadas.add(nextPiece.toString());
         }
         
-        // Se asigna en la posición siguiente la pieza promovida.
-        setPiece(nextPos, promotedPiece);
-    }
+        }
 
     // Valid Move: Método para verificar si un movimiento es válido.
     public boolean validMove(Position actualPos, Position nextPos) {

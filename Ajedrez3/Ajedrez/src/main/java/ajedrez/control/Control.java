@@ -33,17 +33,6 @@ public class Control implements Serializable {
         turnoActual = "B";
     }
     
-    // Get Instance: Obtiene una nueva instancia de control.
-    public static Control getInstance(){
-        instance = new Control();
-        return instance;
-    }
-    
-    // Get Tablero: Obtiene el tablero de juego.
-    public Tablero getTablero(){
-        return board;
-    }
-    
     // Change Team: Cambia al equipo contrario para el siguiente turno.
    private void changeTeam(){
        if (turnoActual.equals("B")){
@@ -51,8 +40,19 @@ public class Control implements Serializable {
        }else{
            turnoActual = "B";
        }
-   }    
+   }
+   
+    // Get Instance: Obtiene una nueva instancia de control.
+    public static Control getInstance(){
+        instance = new Control();
+        return instance;
+    }
     
+    // Get Capturadas: Obtiene las piezas capturadas hasta el momento.
+    public List<String> getCapturadas(){
+        return board.getCapturadas();
+    }
+          
    // Reiniciar Juego: Reinicia el tablero y los atributos privados de la clase.
     public void reiniciarJuego(){
         board = new Tablero();
@@ -89,7 +89,6 @@ public class Control implements Serializable {
                 boolean castlingIdentified = (firstPiece instanceof Rey) && (secondPiece instanceof Torre) ||
                         (secondPiece instanceof Rey) && (firstPiece instanceof Torre);
                 if (castlingIdentified){
-                    System.out.println("castling identificado");
                     boolean castlingDecision = firstPiece instanceof Rey?
                             board.validCastling(firstPiece,secondPiece):
                             board.validCastling(secondPiece, firstPiece);
@@ -109,8 +108,6 @@ public class Control implements Serializable {
         // Si no se cumplen ninguno de los dos casos mencionados entonces se retorna un menos uno
         // indicando que no se puede efectuar la jugada.
         }else{
-            System.out.println("Equipo actual: " + turnoActual);
-            System.out.println("jugada no valida");
             return -1;
         }
     }
@@ -145,7 +142,6 @@ public class Control implements Serializable {
            actualPosition = null;
 
            board.castleMove(kingPos, rookPos, towerAtStart);
-           board.printTablero();
            changeTeam();
     }
     
@@ -158,7 +154,6 @@ public class Control implements Serializable {
         String actualBox = getActualPositionBox();
         Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
         board.promotionMove(actualPosition, nextPos, turnoActual, type);
-        board.printTablero();
         actualPosition = null;
 
         // Se verifica si hay jaque mate
@@ -180,7 +175,6 @@ public class Control implements Serializable {
         String actualBox = getActualPositionBox();
         Position nextPos = obtenerPosition(coords.get(0), coords.get(1));
         board.movePiece(actualPosition, nextPos);
-        board.printTablero();
         actualPosition = null;
        
         
@@ -219,11 +213,7 @@ public class Control implements Serializable {
    public boolean playersSet(){
        return jugador1 != null && jugador2 != null;
    }
-   
-   public void printTablero(){
-       board.printTablero();
-   }
-        
+       
     // Guardar Datos: Método para guardar los datos de una partida, recibe como parámetro un control y la dirección
    // donde se guarda la información.
     public static boolean guardarDatos(Control control, String path){

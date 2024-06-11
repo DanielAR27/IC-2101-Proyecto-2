@@ -46,6 +46,7 @@ public class Ajedrez extends javax.swing.JFrame {
         choosedBoxLabel = new javax.swing.JLabel();
         tieButton = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        capturedPiecesButton = new javax.swing.JButton();
         piezasLabel = new javax.swing.JLabel();
         actualTeamLabel = new javax.swing.JLabel();
 
@@ -112,6 +113,14 @@ public class Ajedrez extends javax.swing.JFrame {
         jLabel2.setText("ⓇDrSmey");
         Tablas.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 450, -1, -1));
 
+        capturedPiecesButton.setText("Ver capturadas");
+        capturedPiecesButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                capturedPiecesButtonActionPerformed(evt);
+            }
+        });
+        Tablas.add(capturedPiecesButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 110, 120, -1));
+
         piezasLabel.setForeground(new java.awt.Color(0, 0, 0));
         piezasLabel.setIcon(new javax.swing.ImageIcon(System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\piezas.png"));
         Tablas.add(piezasLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 110, 230, 340));
@@ -171,7 +180,7 @@ public class Ajedrez extends javax.swing.JFrame {
     
     // Ping Button: Método para llevar a cabo las acciones entre las piezas.
     private void pingButton(String positionBox, Map<String, javax.swing.JButton> buttons){
-        if (gameReady){ // Loa botones van a funcionar solo cuando el juego se encuentre listo.
+        if (gameReady){ // Los botones van a funcionar solo cuando el juego se encuentre listo.
             // Se obtiene el resultado del movimiento del jugador.
             int jugadorResultado = control.jugadorJuega(positionBox);
 
@@ -376,6 +385,12 @@ public class Ajedrez extends javax.swing.JFrame {
                 }
             }
     }//GEN-LAST:event_tieButtonActionPerformed
+
+    private void capturedPiecesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_capturedPiecesButtonActionPerformed
+        Capturadas cpt = new Capturadas(this, true);
+        cpt.setLocationRelativeTo(this);
+        cpt.setVisible(true);       
+    }//GEN-LAST:event_capturedPiecesButtonActionPerformed
     
     // End Game: Muestra un mensaje con el ganador y el mótivo de la victoria.
     private void endGame(String winner, String defeatReason){
@@ -400,6 +415,7 @@ public class Ajedrez extends javax.swing.JFrame {
     private void setGameStatic(){
         gameReady = false;
         updateButtonsIcons();
+        capturedPiecesButton.setVisible(false);
         loadButton.setVisible(true);
         surrenderButton.setVisible(false);
         tieButton.setVisible(false);
@@ -415,6 +431,7 @@ public class Ajedrez extends javax.swing.JFrame {
         gameReady = true;
         startButton.setVisible(false);
         loadButton.setVisible(false);
+        capturedPiecesButton.setVisible(true);
         surrenderButton.setVisible(true);
         tieButton.setVisible(true);
         saveButton.setVisible(true);
@@ -462,6 +479,7 @@ public class Ajedrez extends javax.swing.JFrame {
     private javax.swing.JPanel Tablas;
     private javax.swing.JLabel actualPlayerLabel;
     private javax.swing.JLabel actualTeamLabel;
+    private javax.swing.JButton capturedPiecesButton;
     private javax.swing.JLabel choosedBoxLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

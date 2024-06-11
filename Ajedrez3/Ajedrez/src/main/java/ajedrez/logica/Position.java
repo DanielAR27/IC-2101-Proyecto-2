@@ -33,11 +33,9 @@ public class Position implements Serializable{
         else
             return false;
     }
-        
+
     @Override
-    // To String: Muestra la fila y columna de la posición.
     public String toString(){
         return "(" + row + ", " + col + ")";
     }
-    
 }
