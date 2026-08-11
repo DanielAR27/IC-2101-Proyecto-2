@@ -68,9 +68,9 @@ public class Peon extends Piece {
     // Get Path: Retorna la dirección de imagen de la pieza.
     public String getPath() {
         if (equipo.toString().equals("B"))
-            return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\peon_blanco.png";
+            return System.getProperty("user.dir") + "\\Ajedrez3\\Ajedrez\\src\\main\\java\\ajedrez\\interfaz\\peon_blanco.png";
         else
-            return System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\peon_negro.png";
+            return System.getProperty("user.dir") + "\\Ajedrez3\\Ajedrez\\src\\main\\java\\ajedrez\\interfaz\\peon_negro.png";
     }
 
     @Override

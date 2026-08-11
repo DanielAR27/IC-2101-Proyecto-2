@@ -1,1 +1,51 @@
-/Ajedrez3/Ajedrez/target/
+# ============================================================
+# Java / Maven
+# ============================================================
+# Archivos compilados
+*.class
+*.jar
+*.war
+*.ear
+
+# Carpetas de output de Maven/Gradle
+**/target/
+**/build/
+
+# ============================================================
+# IntelliJ IDEA
+# ============================================================
+# Toda la carpeta .idea es configuración personal del IDE
+.idea/
+*.iml
+out/
+
+# ============================================================
+# NetBeans (proyecto original)
+# ============================================================
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# ============================================================
+# Sistemas operativos
+# ============================================================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ============================================================
+# Editores varios
+# ============================================================
+*.swp
+*.swo
+*~
+.vscode/

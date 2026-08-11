@@ -122,7 +122,7 @@ public class Ajedrez extends javax.swing.JFrame {
         Tablas.add(capturedPiecesButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 110, 120, -1));
 
         piezasLabel.setForeground(new java.awt.Color(0, 0, 0));
-        piezasLabel.setIcon(new javax.swing.ImageIcon(System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\piezas.png"));
+        piezasLabel.setIcon(new javax.swing.ImageIcon(System.getProperty("user.dir") + "\\Ajedrez3\\Ajedrez\\src\\main\\java\\ajedrez\\interfaz\\piezas.png"));
         Tablas.add(piezasLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 110, 230, 340));
 
         actualTeamLabel.setForeground(new java.awt.Color(0, 0, 0));
@@ -158,7 +158,7 @@ public class Ajedrez extends javax.swing.JFrame {
         // Dejar el juego estático.
         setGameStatic();
         //Cambiar el ícono del tablero.
-        tableroLabel.setIcon(new javax.swing.ImageIcon(System.getProperty("user.dir") + "\\src\\main\\java\\ajedrez\\interfaz\\tablero.png"));
+        tableroLabel.setIcon(new javax.swing.ImageIcon(System.getProperty("user.dir") + "\\Ajedrez3\\Ajedrez\\src\\main\\java\\ajedrez\\interfaz\\tablero.png"));
         tableroLabel.setText("jLabel1");
         // Agregar el tablero al panel principal.
         Tablas.add(tableroLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 445, 428));
