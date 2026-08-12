@@ -13,6 +13,17 @@ public class PromotePawn extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE); // Evita cerrar la ventana.
+        aplicarIdioma();
+    }
+    
+    private void aplicarIdioma() {
+        Idioma idioma = Idioma.getInstance();
+        this.setTitle(idioma.get("title_promocion"));
+        jLabel1.setText(idioma.get("lbl_seleccionar_pieza"));
+        queenButton.setText(idioma.get("btn_reina"));
+        rookButton.setText(idioma.get("btn_torre"));
+        horseButton.setText(idioma.get("btn_caballo"));
+        bishopButton.setText(idioma.get("btn_alfil"));
     }
 
     /**

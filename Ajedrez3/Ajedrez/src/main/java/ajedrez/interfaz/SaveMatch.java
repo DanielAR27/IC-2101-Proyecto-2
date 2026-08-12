@@ -17,6 +17,16 @@ public class SaveMatch extends javax.swing.JDialog {
         initComponents();
         directoryPath = null;
         this.control = control;
+        aplicarIdioma();
+    }
+    
+    private void aplicarIdioma() {
+        Idioma idioma = Idioma.getInstance();
+        this.setTitle(idioma.get("title_guardar"));
+        directoryPathTextLabel.setText(idioma.get("lbl_ruta_directorio"));
+        jLabel1.setText(idioma.get("lbl_nombre_archivo"));
+        openDirectoryButton.setText(idioma.get("btn_abrir_dir"));
+        saveButton.setText(idioma.get("btn_guardar"));
     }
 
     /**
@@ -117,33 +127,39 @@ public class SaveMatch extends javax.swing.JDialog {
         int decision = j.showSaveDialog(null);
         if (decision == JFileChooser.APPROVE_OPTION){
             directoryPath = j.getSelectedFile().getAbsolutePath() + "\\";
-            directoryPathTextLabel.setText("Directory Path: " + j.getSelectedFile().getAbsolutePath());
+            directoryPathTextLabel.setText(Idioma.getInstance().get("lbl_ruta_directorio") + " " + j.getSelectedFile().getAbsolutePath());
         }   
     }//GEN-LAST:event_openDirectoryButtonActionPerformed
     
     // Save Button Action: Se encarga de guardar la partida actual en el directorio solicitado con el nombre de archivo
     // solicitado.
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
+       Idioma idioma = Idioma.getInstance();
        // Se obtiene el nombre del archivo.
         String fileName = fileNameTextField.getText();
        // Se verifica que la extensión del archivo sea un binario.
        if (!fileName.endsWith(".bin")){
-                JOptionPane.showMessageDialog(this, "Verifique que el nombre del archivo corresponda a un archivo binario.", 
-                        "Advertencia", JOptionPane.ERROR_MESSAGE);
+                String msg = idioma.isEnEspanol() ? "Verifique que el nombre del archivo corresponda a un archivo binario." : "Ensure the file name corresponds to a binary file (.bin).";
+                Idioma.mostrarMensaje(this, msg, 
+                        idioma.get("title_advertencia"), JOptionPane.ERROR_MESSAGE);
       // Se  verifica que el usuario haya escodigo un directorio a donde guardar el archivo.
        }else if(directoryPath == null){
-                JOptionPane.showMessageDialog(this, "Verifique haber escodigo una dirección para el directorio.", 
-                        "Advertencia", JOptionPane.ERROR_MESSAGE);           
+                String msgDir = idioma.isEnEspanol() ? "Verifique haber escodigo una direcci\u00f3n para el directorio." : "Please select a directory to save the file.";
+                Idioma.mostrarMensaje(this, msgDir, 
+                        idioma.get("title_advertencia"), JOptionPane.ERROR_MESSAGE);           
        }else{ // Si todas las restricciones anteriores se cumplen entonces se intentará guardar el archivo.
            // Se intenta guardar el archivo.
            boolean saveCondition = Control.guardarDatos(control, directoryPath+fileName);
            if (saveCondition){ // Si el proceso se da con éxito entonces se notifica al usuario y se cierra la ventana.
-                 JOptionPane.showMessageDialog(this, "Se ha guardado el archivo exitosamente.", 
-                        "Advertencia", JOptionPane.INFORMATION_MESSAGE);
+                  String msgExito = idioma.isEnEspanol() ? "Se ha guardado el archivo exitosamente." : "The file has been saved successfully.";
+                  Idioma.mostrarMensaje(this, msgExito, 
+                        idioma.get("title_notificacion"), JOptionPane.INFORMATION_MESSAGE);
                   dispose();
-           }else // En caso de que suceda algún error, se notifica al usuario para que verifique la ruta del directorio.
-                JOptionPane.showMessageDialog(this, "No se ha podido guardar el archivo, verifique los datos ingresados.", 
-                        "Advertencia", JOptionPane.ERROR_MESSAGE);
+           }else { // En caso de que suceda algún error, se notifica al usuario para que verifique la ruta del directorio.
+                String msgError = idioma.isEnEspanol() ? "No se ha podido guardar el archivo, verifique los datos ingresados." : "Could not save the file, please check the input data.";
+                Idioma.mostrarMensaje(this, msgError, 
+                        idioma.get("title_error"), JOptionPane.ERROR_MESSAGE);
+           }
        }
     }//GEN-LAST:event_saveButtonActionPerformed
 

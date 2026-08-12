@@ -18,13 +18,26 @@ public class Ajedrez extends javax.swing.JFrame {
     private boolean gameReady;
     protected Control control;
     private Map <String , javax.swing.JButton> botones;
+    private javax.swing.JButton langToggleButton;  // Botón que muestra el idioma destino
     
     // Constructor
     public Ajedrez() {
         control = Control.getInstance();
         botones = new TreeMap<>();
         initComponents();
+        // Ícono de la ventana
+        java.net.URL iconUrl = getClass().getResource("/chess_icon_game.png");
+        if (iconUrl != null) setIconImage(new javax.swing.ImageIcon(iconUrl).getImage());
         loadGame();
+    }
+
+    // Load Icon: Método auxiliar para cargar imágenes desde el classpath del JAR.
+    // Retorna null si el recurso no existe, evitando NullPointerException.
+    private javax.swing.ImageIcon loadIcon(String resourcePath) {
+        if (resourcePath == null) return null;
+        java.net.URL url = getClass().getResource(resourcePath);
+        if (url == null) return null;
+        return new javax.swing.ImageIcon(url);
     }
 
     /**
@@ -51,14 +64,14 @@ public class Ajedrez extends javax.swing.JFrame {
         actualTeamLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Chess");
+        setTitle("Chess Game");
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         Tablas.setBackground(new java.awt.Color(244, 231, 214));
         Tablas.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setText("jLabel1");
+        jLabel1.setText("");
         Tablas.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -10, -1, -1));
 
         saveButton.setText("Guardar Partida");
@@ -109,9 +122,9 @@ public class Ajedrez extends javax.swing.JFrame {
         });
         Tablas.add(tieButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 430, 130, -1));
 
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel2.setText("ⓇDrSmey");
-        Tablas.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 450, -1, -1));
+        jLabel2.setForeground(new java.awt.Color(120, 120, 120));
+        jLabel2.setText("Arte lateral: Dr. Smey");
+        Tablas.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(500, 450, -1, -1));
 
         capturedPiecesButton.setText("Ver capturadas");
         capturedPiecesButton.addActionListener(new java.awt.event.ActionListener() {
@@ -122,7 +135,7 @@ public class Ajedrez extends javax.swing.JFrame {
         Tablas.add(capturedPiecesButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 110, 120, -1));
 
         piezasLabel.setForeground(new java.awt.Color(0, 0, 0));
-        piezasLabel.setIcon(new javax.swing.ImageIcon(System.getProperty("user.dir") + "\\Ajedrez3\\Ajedrez\\src\\main\\java\\ajedrez\\interfaz\\piezas.png"));
+        piezasLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ajedrez/interfaz/piezas.png")));
         Tablas.add(piezasLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 110, 230, 340));
 
         actualTeamLabel.setForeground(new java.awt.Color(0, 0, 0));
@@ -158,12 +171,53 @@ public class Ajedrez extends javax.swing.JFrame {
         // Dejar el juego estático.
         setGameStatic();
         //Cambiar el ícono del tablero.
-        tableroLabel.setIcon(new javax.swing.ImageIcon(System.getProperty("user.dir") + "\\Ajedrez3\\Ajedrez\\src\\main\\java\\ajedrez\\interfaz\\tablero.png"));
-        tableroLabel.setText("jLabel1");
+        tableroLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ajedrez/interfaz/tablero.png")));
+        tableroLabel.setText("");
         // Agregar el tablero al panel principal.
         Tablas.add(tableroLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 445, 428));
-        tableroLabel.getAccessibleContext().setAccessibleName("");        
+        tableroLabel.getAccessibleContext().setAccessibleName("");
 
+        // --- Botón de idioma (bandera del idioma destino) ---
+        // Muestra el idioma AL QUE puede cambiar el usuario (no el actual).
+        // Posición: esquina superior derecha, por encima del piezasLabel (y < 110).
+        langToggleButton = new javax.swing.JButton();
+        langToggleButton.setFocusPainted(false);
+        langToggleButton.setIconTextGap(5);
+        langToggleButton.setMargin(new java.awt.Insets(2, 5, 2, 5));
+        langToggleButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        langToggleButton.addActionListener(e -> onLanguageButtonClicked());
+        Tablas.add(langToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 15, 85, 28));
+        Tablas.setComponentZOrder(langToggleButton, 0);
+        updateLangButton(); // Inicializar ícono y texto
+        
+        aplicarIdioma(); // Aplicar el idioma inicial
+    }
+    
+    // Aplicar Idioma: Actualiza los textos de todos los botones y labels estáticos
+    private void aplicarIdioma() {
+        Idioma idioma = Idioma.getInstance();
+        this.setTitle(idioma.get("title_ajedrez"));
+        startButton.setText(idioma.get("btn_empezar"));
+        saveButton.setText(idioma.get("btn_guardar"));
+        loadButton.setText(idioma.get("btn_cargar"));
+        surrenderButton.setText(idioma.get("btn_rendirse"));
+        tieButton.setText(idioma.get("btn_tablas"));
+        capturedPiecesButton.setText(idioma.get("btn_capturadas"));
+        
+        if (control.getJugadorActual() != null && !control.getJugadorActual().equals("")) {
+            actualPlayerLabel.setText(idioma.get("lbl_jugador_actual") + " " + control.getJugadorActual());
+            actualTeamLabel.setText(idioma.get("lbl_equipo_actual") + " " + idioma.get(control.getEquipoActual()));
+        } else {
+            actualPlayerLabel.setText(idioma.get("lbl_jugador_actual"));
+            actualTeamLabel.setText(idioma.get("lbl_equipo_actual"));
+        }
+        
+        String actualBox = control.getActualPositionBox();
+        if (actualBox != null && !actualBox.equals("")) {
+            choosedBoxLabel.setText(idioma.get("lbl_casilla_seleccionada") + " " + actualBox);
+        } else {
+            choosedBoxLabel.setText(idioma.get("lbl_casilla_seleccionada"));
+        }
     }
     
     private void updateButtonsIcons(){
@@ -173,7 +227,7 @@ public class Ajedrez extends javax.swing.JFrame {
                 int rowTop = 8 - i;
                 String positionBox = DataVerificator.IntToLetter(j) + rowTop;
                 JButton button = botones.get(positionBox);
-                button.setIcon(new javax.swing.ImageIcon(control.pathConstructor(i, j)));
+                button.setIcon(loadIcon(control.pathConstructor(i, j)));
             }
         }
     }
@@ -187,10 +241,10 @@ public class Ajedrez extends javax.swing.JFrame {
             switch (jugadorResultado) {
                 case 0 -> { // CASO #0: SELECCIONAR CASILLA.
                    choosedBoxLabel.setVisible(true);
-                   choosedBoxLabel.setText("Casilla seleccionada: " + positionBox);
+                   choosedBoxLabel.setText(Idioma.getInstance().get("lbl_casilla_seleccionada") + " " + positionBox);
                 }
-                case -1 -> JOptionPane.showMessageDialog(this, "La posición no es válida, intente de nuevo.",
-                            "Notificación", JOptionPane.ERROR_MESSAGE); // CASO # -1: POSICION NO VALIDA.
+                case -1 -> Idioma.mostrarMensaje(this, Idioma.getInstance().get("msg_pos_invalida"), 
+                        Idioma.getInstance().get("title_notificacion"), JOptionPane.ERROR_MESSAGE); // CASO # -1: POSICION NO VALIDA.
                 case 1->{ // CASO #1: ENROQUE
                         // Se obtiene la casilla que fue consultada primeramente.
                         String firstBox = control.getActualPositionBox();
@@ -231,73 +285,55 @@ public class Ajedrez extends javax.swing.JFrame {
                             kingButton = botones.get("C"+firstBox.substring(1));
                             rookButton = botones.get("D"+firstBox.substring(1));
 
-                            kingButton.setIcon(new javax.swing.ImageIcon(control.pathConstructor(kingCoords.get(0), kingCoords.get(1) - 2)));
-                            rookButton.setIcon(new javax.swing.ImageIcon(control.pathConstructor(rookCoords.get(0), rookCoords.get(1) + 3)));
+                            kingButton.setIcon(loadIcon(control.pathConstructor(kingCoords.get(0), kingCoords.get(1) - 2)));
+                            rookButton.setIcon(loadIcon(control.pathConstructor(rookCoords.get(0), rookCoords.get(1) + 3)));
                         // Torre del final                                
                         }else{
                             kingButton = botones.get("G"+firstBox.substring(1));
                             rookButton = botones.get("F"+firstBox.substring(1));
 
-                            kingButton.setIcon(new javax.swing.ImageIcon(control.pathConstructor(kingCoords.get(0), kingCoords.get(1) + 2)));
-                            rookButton.setIcon(new javax.swing.ImageIcon(control.pathConstructor(rookCoords.get(0), rookCoords.get(1) - 2)));                         
+                            kingButton.setIcon(loadIcon(control.pathConstructor(kingCoords.get(0), kingCoords.get(1) + 2)));
+                            rookButton.setIcon(loadIcon(control.pathConstructor(rookCoords.get(0), rookCoords.get(1) - 2)));                         
                         }                        
                         
                         
                         oldFirstButton.setIcon(null);
                         oldSecondButton.setIcon(null);
-                       
-                        actualPlayerLabel.setText("Jugador actual: " + control.getJugadorActual());
-                        actualTeamLabel.setText("Equipo actual: " + control.getEquipoActual());
-                        choosedBoxLabel.setVisible(false);                                 
+                        actualizarLabelsPostMovimiento();                                 
                 } case 2 ->{ // CASO #2: PROMOCION DE PEON.
                     JButton firstAccessed = getFirstAccessedButton();
                     JButton newestAccessed = botones.get(positionBox);
-                    // Se obtienen las coordenadas relativas a la casilla que fue seleccionada primeramente.
                     List <Integer> coords = (ArrayList) DataVerificator.boxPositionValues(positionBox);
                     
-                    // Se abre la ventana para promover al peón.
                     PromotePawn pp = new PromotePawn(this, true);
                     pp.setLocationRelativeTo(this);
                     pp.setVisible(true);
                     
-                    // Se obtiene el resultado de la selección del usuario.
                     String type = pp.getResult();
                     
-                    // Si el movimiento termina en Jaque Mate entonces se finaliza el juego.
                     if(control.promotePlay(positionBox, type)){
-                         newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
+                         newestAccessed.setIcon(loadIcon(control.pathConstructor(coords.get(0), coords.get(1))));
                         firstAccessed.setIcon(null);                       
                         endGame(control.getJugadorActual(), "Jaque Mate");
-                    }else{ // En caso contrario se continuará el juego.
-                        newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
+                    }else{ 
+                        newestAccessed.setIcon(loadIcon(control.pathConstructor(coords.get(0), coords.get(1))));
                         firstAccessed.setIcon(null);
-                        
-                        actualPlayerLabel.setText("Jugador actual: " + control.getJugadorActual());
-                        actualTeamLabel.setText("Equipo actual: " + control.getEquipoActual());
-                        choosedBoxLabel.setVisible(false);                        
+                        actualizarLabelsPostMovimiento();                        
                     }
                 }
                 default -> { // CASO #3:  MOVIMIENTO NORMAL DE PIEZA.
-                    // Se obtiene la casilla que fue consultada primeramente.
                     String firstBox = control.getActualPositionBox();
-                    // Se obtiene el botón que fue consultado primeramente.
                     JButton firstAccessed = getFirstAccessedButton();
-                    // Obtiene el boton acessado recientemente.
                     JButton newestAccessed = botones.get(positionBox);
-                    // Se obtienen las coordenadas relativas a la casilla que fue seleccionada primeramente.
                     List <Integer> coords = (ArrayList) DataVerificator.boxPositionValues(firstBox);
-                    // Al nuevo boton se le asigna la imagen del viejo.
-                    newestAccessed.setIcon(new javax.swing.ImageIcon(control.pathConstructor(coords.get(0), coords.get(1))));
-                    // Al viejo se le asigna que no tenga imagen.
+                    
+                    newestAccessed.setIcon(loadIcon(control.pathConstructor(coords.get(0), coords.get(1))));
                     firstAccessed.setIcon(null); 
                     
-                    // Si el movimiento termina en Jaque Mate entonces se finaliza el juego.
                     if(control.changePlayer(positionBox)){
                         endGame(control.getJugadorActual(), "Jaque Mate");
-                    }else{ // En caso contrario, se continua.
-                        actualPlayerLabel.setText("Jugador actual: " + control.getJugadorActual());
-                        actualTeamLabel.setText("Equipo actual: " + control.getEquipoActual());
-                        choosedBoxLabel.setVisible(false);
+                    }else{ 
+                        actualizarLabelsPostMovimiento();
                     }
                 }
             }
@@ -318,7 +354,13 @@ public class Ajedrez extends javax.swing.JFrame {
             }
         }
         return firstAccessed;
-    }    
+    }
+    
+    private void actualizarLabelsPostMovimiento() {
+        actualPlayerLabel.setText(Idioma.getInstance().get("lbl_jugador_actual") + " " + control.getJugadorActual());
+        actualTeamLabel.setText(Idioma.getInstance().get("lbl_equipo_actual") + " " + Idioma.getInstance().get(control.getEquipoActual()));
+        choosedBoxLabel.setVisible(false);
+    }
     
     // Save Button Action: Muestra en pantalla una ventana para guardar la partida actual en un archivo.
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
@@ -343,7 +385,7 @@ public class Ajedrez extends javax.swing.JFrame {
                 String actualBox = control.getActualPositionBox();
                 if (!actualBox.equals("")){
                     choosedBoxLabel.setVisible(true);
-                    choosedBoxLabel.setText("Casilla seleccionada: " + actualBox);
+                    choosedBoxLabel.setText(Idioma.getInstance().get("lbl_casilla_seleccionada") + " " + actualBox);
                 }
 
                 updateButtonsIcons();
@@ -363,24 +405,26 @@ public class Ajedrez extends javax.swing.JFrame {
     // Surrender Button Action: Deja que el jugador del turno actual se rinda dando como ganador al jugador del otro equipo.
     private void surrenderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_surrenderButtonActionPerformed
             String equipoActual = control.getEquipoActual();
-            int result = JOptionPane.showConfirmDialog(this, "¿Está seguro el jugador " + control.getJugadorActual()
-                    + " de rendirse?", "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            Idioma idioma = Idioma.getInstance();
+            String msg = idioma.get("msg_seguro_rendirse").replace("{player}", control.getJugadorActual());
+            int result = mostrarConfirmacion(msg, idioma.get("title_advertencia"));
             
             if (result == JOptionPane.YES_OPTION){   
-                endGame(control.getJugadorOpuesto(), "Abandono");
+                endGame(control.getJugadorOpuesto(), idioma.get("msg_abandono"));
             }
     }//GEN-LAST:event_surrenderButtonActionPerformed
 
     // Tie Button Action: Pide a ambos jugadores la confirmación para empatar una partida.
     private void tieButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tieButtonActionPerformed
-            int actualPlayerResult = JOptionPane.showConfirmDialog(this, "Jugador " + control.getJugadorActual() + " ¿Desea hacer tablas?", 
-                    "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            Idioma idioma = Idioma.getInstance();
+            String msgActual = idioma.get("msg_desea_tablas").replace("{player}", control.getJugadorActual());
+            int actualPlayerResult = mostrarConfirmacion(msgActual, idioma.get("title_advertencia"));
             if (actualPlayerResult == JOptionPane.YES_OPTION){
-                int otherPlayerResult = JOptionPane.showConfirmDialog(this, "Jugador " + control.getJugadorOpuesto() + " ¿Desea hacer tablas?", 
-                        "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                String msgOpuesto = idioma.get("msg_desea_tablas").replace("{player}", control.getJugadorOpuesto());
+                int otherPlayerResult = mostrarConfirmacion(msgOpuesto, idioma.get("title_advertencia"));
                 if (otherPlayerResult == JOptionPane.YES_OPTION){
-                    JOptionPane.showMessageDialog(this, "Ambos jugadores han empatado la partida.", 
-                            "Tablas", JOptionPane.INFORMATION_MESSAGE);                    
+                    Idioma.mostrarMensaje(this, idioma.get("msg_tablas_aceptadas"), 
+                            idioma.get("title_tablas"), JOptionPane.INFORMATION_MESSAGE);                    
                     playAgain();
                 }
             }
@@ -392,17 +436,105 @@ public class Ajedrez extends javax.swing.JFrame {
         cpt.setVisible(true);       
     }//GEN-LAST:event_capturedPiecesButtonActionPerformed
     
+    // On Language Button Clicked: Muestra confirmación y cambia el idioma si el usuario acepta.
+    private void onLanguageButtonClicked() {
+        Idioma idioma = Idioma.getInstance();
+        boolean enEspanol = idioma.isEnEspanol();
+        
+        // Mostrar confirmación en el idioma ACTUAL antes de cambiar.
+        String mensaje = enEspanol
+            ? "\u00bfEst\u00e1 seguro de cambiar su idioma?"
+            : "Are you sure you want to change the language?";
+        String titulo = enEspanol ? "Cambiar Idioma" : "Change Language";
+
+        int resultado = mostrarConfirmacion(mensaje, titulo);
+
+        if (resultado == javax.swing.JOptionPane.YES_OPTION) {
+            idioma.setEnEspanol(!enEspanol);
+            updateLangButton();
+            aplicarIdioma();
+        }
+    }
+
+    // Update Lang Button: Actualiza el ícono y texto del botón para mostrar el idioma destino.
+    private void updateLangButton() {
+        if (langToggleButton == null) return;
+        Idioma idioma = Idioma.getInstance();
+        boolean enEspanol = idioma.isEnEspanol();
+        
+        String langCode  = enEspanol ? "EN" : "ES";
+        String tooltip   = enEspanol ? idioma.get("tooltip_ingles") : idioma.get("tooltip_espanol");
+        langToggleButton.setIcon(enEspanol ? createUKFlag() : createSpanishFlag());
+        langToggleButton.setText(langCode);
+        langToggleButton.setToolTipText(tooltip);
+    }
+
+    private javax.swing.ImageIcon createSpanishFlag() {
+        java.awt.image.BufferedImage img = new java.awt.image.BufferedImage(24, 16, java.awt.image.BufferedImage.TYPE_INT_RGB);
+        java.awt.Graphics2D g = img.createGraphics();
+        g.setColor(new java.awt.Color(173, 21, 25)); // Rojo
+        g.fillRect(0, 0, 24, 4);
+        g.fillRect(0, 12, 24, 4);
+        g.setColor(new java.awt.Color(250, 189, 0)); // Amarillo
+        g.fillRect(0, 4, 24, 8);
+        g.setColor(new java.awt.Color(173, 21, 25)); // Escudo simplificado (un cuadrito)
+        g.fillRect(4, 6, 3, 4);
+        g.setColor(java.awt.Color.BLACK);
+        g.drawRect(4, 6, 2, 3);
+        g.dispose();
+        return new javax.swing.ImageIcon(img);
+    }
+
+    private javax.swing.ImageIcon createUKFlag() {
+        java.awt.image.BufferedImage img = new java.awt.image.BufferedImage(24, 16, java.awt.image.BufferedImage.TYPE_INT_RGB);
+        java.awt.Graphics2D g = img.createGraphics();
+        g.setColor(new java.awt.Color(1, 33, 105)); // Azul
+        g.fillRect(0, 0, 24, 16);
+        
+        // Diagonales blancas
+        g.setColor(java.awt.Color.WHITE);
+        g.setStroke(new java.awt.BasicStroke(3f));
+        g.drawLine(0, 0, 24, 16);
+        g.drawLine(0, 16, 24, 0);
+        
+        // Diagonales rojas
+        g.setColor(new java.awt.Color(200, 16, 46));
+        g.setStroke(new java.awt.BasicStroke(1f));
+        g.drawLine(0, 0, 24, 16);
+        g.drawLine(0, 16, 24, 0);
+        
+        // Cruz blanca
+        g.setColor(java.awt.Color.WHITE);
+        g.fillRect(9, 0, 6, 16);
+        g.fillRect(0, 5, 24, 6);
+        
+        // Cruz roja central
+        g.setColor(new java.awt.Color(200, 16, 46));
+        g.fillRect(10, 0, 4, 16);
+        g.fillRect(0, 6, 24, 4);
+        
+        // Borde oscuro para enmarcar
+        g.setColor(new java.awt.Color(50, 50, 50));
+        g.setStroke(new java.awt.BasicStroke(1f));
+        g.drawRect(0, 0, 23, 15);
+        g.dispose();
+        
+        return new javax.swing.ImageIcon(img);
+    }
+
     // End Game: Muestra un mensaje con el ganador y el mótivo de la victoria.
     private void endGame(String winner, String defeatReason){
-            JOptionPane.showMessageDialog(this, "El jugador " + winner + " ha ganado la partida.", 
+            Idioma idioma = Idioma.getInstance();
+            String msg = idioma.get("msg_ganador").replace("{player}", winner);
+            Idioma.mostrarMensaje(this, msg, 
                     defeatReason, JOptionPane.INFORMATION_MESSAGE);
             playAgain();
     }
     
     // Play Again: Muestra un mensaje para volver a jugar.
     private void playAgain(){
-             int result = JOptionPane.showConfirmDialog(this, "¿Desea volver a jugar otra partida?",
-                     "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+             Idioma idioma = Idioma.getInstance();
+             int result = mostrarConfirmacion(idioma.get("msg_volver_jugar"), idioma.get("title_fin_juego"));
              if (result == JOptionPane.YES_OPTION){ // Si el usuario confirma entonces se reinicia el juego.
                  control.reiniciarJuego();
                  setGameStatic();
@@ -437,8 +569,18 @@ public class Ajedrez extends javax.swing.JFrame {
         saveButton.setVisible(true);
         actualPlayerLabel.setVisible(true);
         actualTeamLabel.setVisible(true);
-        actualPlayerLabel.setText("Jugador actual: " + control.getJugadorActual());
-        actualTeamLabel.setText("Equipo actual: " + control.getEquipoActual());
+        aplicarIdioma();
+    }
+    
+    private int mostrarConfirmacion(String mensaje, String titulo) {
+        Idioma idioma = Idioma.getInstance();
+        Object[] options = { idioma.get("btn_si"), idioma.get("btn_no") };
+        return javax.swing.JOptionPane.showOptionDialog(
+            this, mensaje, titulo,
+            javax.swing.JOptionPane.YES_NO_OPTION,
+            javax.swing.JOptionPane.QUESTION_MESSAGE,
+            null, options, options[0]
+        );
     }
     /**
      * @param args the command line arguments

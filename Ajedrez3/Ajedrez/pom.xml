@@ -26,6 +26,19 @@
         <exec.mainClass>ajedrez.interfaz.Ajedrez</exec.mainClass>
     </properties>
     <build>
+      <!-- Incluir imágenes PNG desde src/main/java en el classpath -->
+      <resources>
+          <resource>
+              <directory>src/main/java</directory>
+              <includes>
+                  <include>**/*.png</include>
+              </includes>
+          </resource>
+          <!-- Directorio de recursos estándar (splash screen, etc.) -->
+          <resource>
+              <directory>src/main/resources</directory>
+          </resource>
+      </resources>
       <plugins>
           <plugin>
               <artifactId>maven-assembly-plugin</artifactId>
@@ -38,6 +51,9 @@
                       <manifest>
                       <mainClass>ajedrez.interfaz.Ajedrez</mainClass>
                   </manifest>
+                  <manifestEntries>
+                      <SplashScreen-Image>splash_screen.png</SplashScreen-Image>
+                  </manifestEntries>
                   </archive>
               </configuration>
               <executions>

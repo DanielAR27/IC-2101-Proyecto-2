@@ -22,6 +22,15 @@ public class LoadMatch extends javax.swing.JDialog {
         initComponents();
         match = (Ajedrez) parent;
         filePath = null;
+        aplicarIdioma();
+    }
+    
+    private void aplicarIdioma() {
+        Idioma idioma = Idioma.getInstance();
+        this.setTitle(idioma.get("title_cargar"));
+        filePathTextLabel.setText(idioma.get("lbl_ruta_directorio"));
+        openFileButton.setText(idioma.get("btn_abrir_archivo"));
+        loadButton.setText(idioma.get("title_cargar"));
     }
 
     /**
@@ -108,21 +117,24 @@ public class LoadMatch extends javax.swing.JDialog {
         int decision = j.showSaveDialog(null);
         if (decision == JFileChooser.APPROVE_OPTION){
             filePath = j.getSelectedFile().getAbsolutePath() + "\\";
-            filePathTextLabel.setText("File path: " + j.getSelectedFile().getAbsolutePath());
+            filePathTextLabel.setText(Idioma.getInstance().get("lbl_ruta_directorio") + " " + j.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_openFileButtonActionPerformed
     
     // Load Button Action: Carga un control según el archivo solicitado.
     private void loadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadButtonActionPerformed
+        Idioma idioma = Idioma.getInstance();
         try{
                  match.control = Control.cargarDatos(filePath);
-                 JOptionPane.showMessageDialog(this, "Se ha cargado el archivo exitosamente.", 
-                        "Advertencia", JOptionPane.INFORMATION_MESSAGE);
+                 String msgExito = idioma.isEnEspanol() ? "Se ha cargado el archivo exitosamente." : "File loaded successfully.";
+                 Idioma.mostrarMensaje(this, msgExito, 
+                        idioma.get("title_notificacion"), JOptionPane.INFORMATION_MESSAGE);
                   dispose();            
         }catch(Exception e){
-                             JOptionPane.showMessageDialog(this, "El archivo no se ha podido cargar, intente con otro.", 
-                        "Advertencia", JOptionPane.ERROR_MESSAGE);
-                             filePathTextLabel.setText("File path: ");
+                 String msgError = idioma.isEnEspanol() ? "El archivo no se ha podido cargar, intente con otro." : "File could not be loaded, please try another one.";
+                 Idioma.mostrarMensaje(this, msgError, 
+                        idioma.get("title_error"), JOptionPane.ERROR_MESSAGE);
+                 filePathTextLabel.setText(idioma.get("lbl_ruta_directorio"));
         }
     }//GEN-LAST:event_loadButtonActionPerformed
 

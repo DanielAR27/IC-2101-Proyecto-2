@@ -91,9 +91,9 @@ public class Torre extends Piece {
     // Get Path: Retorna la dirección de imagen de la pieza.
     public String getPath(){
         if (equipo.toString().equals("B"))
-            return System.getProperty("user.dir") + "\\Ajedrez3\\Ajedrez\\src\\main\\java\\ajedrez\\interfaz\\torre_blanca.png";
+            return "/ajedrez/interfaz/torre_blanca.png";
         else
-            return System.getProperty("user.dir") + "\\Ajedrez3\\Ajedrez\\src\\main\\java\\ajedrez\\interfaz\\torre_negra.png";
+            return "/ajedrez/interfaz/torre_negra.png";
     }
 
     @Override

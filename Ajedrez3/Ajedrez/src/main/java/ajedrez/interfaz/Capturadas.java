@@ -15,6 +15,13 @@ public class Capturadas extends javax.swing.JDialog {
         match = (Ajedrez) parent;
         capturadas = match.control.getCapturadas();
         initComponents();
+        aplicarIdioma();
+    }
+    
+    private void aplicarIdioma() {
+        Idioma idioma = Idioma.getInstance();
+        this.setTitle(idioma.get("title_capturadas"));
+        acceptButton.setText(idioma.get("btn_listo"));
     }
 
     /**
